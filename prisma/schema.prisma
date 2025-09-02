@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  tech        String[]
+  github      String
+  live        String
+  year        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Certification {
+  id           Int      @id @default(autoincrement())
+  year         String
+  title        String
+  issuer       String
+  description  String   @db.Text
+  credential   String
+  link         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Thought {
+  id        Int      @id @default(autoincrement())
+  title     String
+  excerpt   String   @db.Text
+  date      String
+  readTime  String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkExperience {
+  id          Int      @id @default(autoincrement())
+  year        String
+  role        String
+  company     String
+  description String   @db.Text
+  tech        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
