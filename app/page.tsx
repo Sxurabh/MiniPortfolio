@@ -14,7 +14,7 @@ const socialLinks: SocialLink[] = [
 ];
 
 export default async function Home() {
-  // Fetch the session on the server using getServerSession and our authOptions
+  // Fetch the session on the server using getServerSession 
   const session = await getServerSession(authOptions);
   
   const allProjects = await prisma.project.findMany({
