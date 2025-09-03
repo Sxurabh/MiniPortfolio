@@ -9,10 +9,12 @@ import { CertificationsSection } from "@/components/sections/CertificationsSecti
 import { ThoughtsSection } from "@/components/sections/ThoughtsSection"
 import { ConnectSection } from "@/components/sections/ConnectSection"
 import { Footer } from "@/components/Footer"
-
+import type { Session } from "next-auth" // Import the Session type
 import type { Project, Certification, Thought, WorkExperience, SocialLink } from '@/lib/types'
 
+// Add the `session` property to the interface
 interface PortfolioClientProps {
+    session: Session | null;
     allProjects: Project[];
     allCertifications: Certification[];
     allThoughts: Thought[];
@@ -21,6 +23,7 @@ interface PortfolioClientProps {
 }
 
 export default function PortfolioClient({
+    session, // Destructure the session prop
     allProjects,
     allCertifications,
     allThoughts,

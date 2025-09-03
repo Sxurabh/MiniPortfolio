@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Kalam } from "next/font/google"
+import AuthProvider from "@/components/AuthProvider"
 import "./globals.css"
 
 const inter = Inter({
@@ -36,7 +37,11 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <AuthProvider>
+            {children}
+        </AuthProvider>
+      </body>
     </html>
   )
 }

@@ -1,12 +1,11 @@
 import { PrismaClient } from '@prisma/client'
 import PortfolioClient from "@/components/PortfolioClient"
 import type { SocialLink } from '@/lib/types'
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 
-// Instantiate Prisma Client
 const prisma = new PrismaClient()
 
-// Social links can remain static as they don't change often.
-// We define them here directly.
 const socialLinks: SocialLink[] = [
   { name: "GitHub", handle: "@Sxurabh", url: "https://github.com/Sxurabh" },
   { name: "Twitter", handle: "@sxurxbh", url: "https://x.com/sxurxbh" },
@@ -15,7 +14,9 @@ const socialLinks: SocialLink[] = [
 ];
 
 export default async function Home() {
-  // This is a Server Component. It fetches data directly from your NeonDB.
+  // Fetch the session on the server using getServerSession and our authOptions
+  const session = await getServerSession(authOptions);
+  
   const allProjects = await prisma.project.findMany({
     orderBy: { year: 'desc' }
   });
@@ -29,9 +30,9 @@ export default async function Home() {
     orderBy: { year: 'desc' }
   });
 
-  // The fetched data and the static social links are passed as props to the Client Component.
   return (
     <PortfolioClient
+        session={session}
         allProjects={allProjects}
         allCertifications={allCertifications}
         allThoughts={allThoughts}
@@ -40,4 +41,3 @@ export default async function Home() {
     />
   )
 }
-

@@ -1,4 +1,5 @@
 export interface Project {
+  id: number;
   title: string;
   description: string;
   tech: string[];
@@ -8,6 +9,7 @@ export interface Project {
 }
 
 export interface Certification {
+  id: number;
   year: string;
   title: string;
   issuer: string;
@@ -17,6 +19,7 @@ export interface Certification {
 }
 
 export interface Thought {
+  id: number; // Add the ID field here
   title: string;
   excerpt: string;
   date: string;
@@ -25,6 +28,7 @@ export interface Thought {
 }
 
 export interface WorkExperience {
+  id: number;
   year: string;
   role: string;
   company: string;
