@@ -1,30 +1,51 @@
-# Minimalist Portfolio
+# 🌐 MiniPortfolio – Personal Portfolio Website
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/saurabh-kirves-projects/v0-minimalist-portfolio-il)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/1Lf5SUVjOwP)
+A modern and responsive **personal portfolio website** built to showcase projects, experience, certifications, and writing — crafted with **Next.js, Prisma, Tailwind CSS, TypeScript**, and deployed on **Vercel**.
 
-## Overview
+---
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## 🚀 Live Demo
 
-## Deployment
+👉 [saurabh-data-analyst.vercel.app](https://saurabh-data-analyst.vercel.app/)
 
-Your project is live at:
+---
 
-**[https://vercel.com/saurabh-kirves-projects/v0-minimalist-portfolio-il](https://vercel.com/saurabh-kirves-projects/v0-minimalist-portfolio-il)**
+## ✨ Features
 
-## Build your app
+- 🎨 **Sleek, minimal design** powered by Tailwind CSS  
+- 📱 **Responsive layout** for desktop and mobile  
+- ⚡ **Fast performance** using Next.js (SSR/SSG where applicable)  
+- 🗂 **Organized content**: About, Experience, Projects, Certifications, Blog, Contact  
+- 🔄 **Automatic deployment** via Vercel + GitHub integration  
+- ♿ **Accessibility-minded** structure and semantic markup
 
-Continue building your app on:
+---
 
-**[https://v0.app/chat/projects/1Lf5SUVjOwP](https://v0.app/chat/projects/1Lf5SUVjOwP)**
+## 🛠 Tech Stack
 
-## How It Works
+- **Framework:** Next.js (React)  
+- **Styling:** Tailwind CSS  
+- **Database / ORM (where used):** Prisma + NeonDB  
+- **Language:** TypeScript  
+- **Hosting / CI:** Vercel
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+---
+
+## 📂 Project Structure
+
+```text
+MiniPortfolio/
+│── app/         # Routing and app entry (Next.js)
+│── components/  # Reusable UI components (Hero, Card, Footer, etc.)
+│── lib/         # Utility functions, helpers, API logic
+│── prisma/      # Database schema and ORM config (if applicable)
+│── public/      # Static assets (images, icons, favicons)
+│── styles/      # Global styles & Tailwind config
+│── package.json
+│── README.md
