@@ -5,11 +5,9 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Thought } from "@/lib/types";
-import { AddThoughtModal } from "@/components/modals/AddThoughtModal";
-import { EditThoughtModal } from "@/components/modals/EditThoughtModal";
-import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"; // Import the new modal
-import { deleteThought } from "@/actions/thought"; // Import the delete action
-
+import { ThoughtFormModal } from "@/components/modals/ThoughtFormModal"; // Import the new modal
+import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal";
+import { deleteThought } from "@/actions/thought";
 import { GenericCrudSection } from "./GenericCrudSection";
 
 interface ThoughtsSectionProps {
@@ -21,14 +19,18 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
     const { data: session } = useSession();
     const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedThought, setSelectedThought] = useState<Thought | null>(null);
 
+    const handleAddClick = () => {
+      setSelectedThought(null);
+      setIsFormModalOpen(true);
+    };
+
     const handleEditClick = (thought: Thought) => {
       setSelectedThought(thought);
-      setIsEditModalOpen(true);
+      setIsFormModalOpen(true);
     };
 
     const handleDeleteClick = (thought: Thought) => {
@@ -63,16 +65,19 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
 
     const renderModals = () => (
       <>
-        <AddThoughtModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
-        <EditThoughtModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} thought={selectedThought} />
-        <DeleteConfirmationModal
-                  isOpen={isDeleteModalOpen}
-                  onClose={() => setIsDeleteModalOpen(false)}
-                  onConfirm={async () => {
-                    if (!selectedThought) return;
-                    return deleteThought(selectedThought.id);
-                  }}
-                  itemName="project"
+        <ThoughtFormModal 
+          isOpen={isFormModalOpen} 
+          onClose={() => setIsFormModalOpen(false)} 
+          thought={selectedThought} 
+        />
+        <DeleteConfirmationModal 
+          isOpen={isDeleteModalOpen} 
+          onClose={() => setIsDeleteModalOpen(false)} 
+          onConfirm={async () => {
+            if (!selectedThought) return;
+            return deleteThought(selectedThought.id);
+          }}
+          itemName="thought"
         />
       </>
     );
@@ -85,7 +90,7 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
         items={allThoughts}
         renderItem={renderItem}
         renderModals={renderModals}
-        onAddItem={() => setIsAddModalOpen(true)}
+        onAddItem={handleAddClick}
         itemsPerPage={4}
         gridClass="grid lg:grid-cols-2 gap-8"
       />

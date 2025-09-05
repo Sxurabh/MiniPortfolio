@@ -3,10 +3,9 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import type { WorkExperience } from "@/lib/types";
-import { AddWorkModal } from "@/components/modals/AddWorkModal";
-import { EditWorkModal } from "@/components/modals/EditWorkModal";
-import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"; // Import the new modal
-import { deleteWorkExperience} from "@/actions/work"; // Import the delete action
+import { WorkFormModal } from "@/components/modals/WorkFormModal"; // Import the new modal
+import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal";
+import { deleteWorkExperience } from "@/actions/work";
 import { Edit, Trash2 } from "lucide-react";
 import { GenericCrudSection } from "./GenericCrudSection";
 
@@ -19,14 +18,18 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
     const { data: session } = useSession();
     const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedWork, setSelectedWork] = useState<WorkExperience | null>(null);
+    
+    const handleAddClick = () => {
+      setSelectedWork(null);
+      setIsFormModalOpen(true);
+    };
 
     const handleEditClick = (job: WorkExperience) => {
       setSelectedWork(job);
-      setIsEditModalOpen(true);
+      setIsFormModalOpen(true);
     };
 
     const handleDeleteClick = (job: WorkExperience) => {
@@ -64,16 +67,20 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
 
     const renderModals = () => (
       <>
-        <AddWorkModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
-        <EditWorkModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} workExperience={selectedWork} />
+        <WorkFormModal
+          isOpen={isFormModalOpen}
+          onClose={() => setIsFormModalOpen(false)}
+          workExperience={selectedWork}
+        />
         <DeleteConfirmationModal
-                  isOpen={isDeleteModalOpen}
-                  onClose={() => setIsDeleteModalOpen(false)}
-                  onConfirm={async () => {
-                    if (!selectedWork) return;
-                    return deleteWorkExperience(selectedWork.id);
-                  }}
-                  itemName="project" />
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={async () => {
+            if (!selectedWork) return;
+            return deleteWorkExperience(selectedWork.id);
+          }}
+          itemName="work experience"
+        />
       </>
     );
 
@@ -85,7 +92,7 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
         items={workExperience}
         renderItem={renderItem}
         renderModals={renderModals}
-        onAddItem={() => setIsAddModalOpen(true)}
+        onAddItem={handleAddClick}
         itemsPerPage={3}
       />
     );

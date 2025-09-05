@@ -4,10 +4,9 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Certification } from "@/lib/types";
-import { AddCertificationModal } from "@/components/modals/AddCertificationModal";
-import { EditCertificationModal } from "@/components/modals/EditCertificationModal";
-import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"; // Import the new modal
-import { deleteCertification } from "@/actions/certification"; // Import the delete action
+import { CertificationFormModal } from "@/components/modals/CertificationFormModal"; // Import the new modal
+import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal";
+import { deleteCertification } from "@/actions/certification";
 import { GenericCrudSection } from "./GenericCrudSection";
 
 interface CertificationsSectionProps {
@@ -19,14 +18,18 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
     const { data: session } = useSession();
     const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCertification, setSelectedCertification] = useState<Certification | null>(null);
 
+    const handleAddClick = () => {
+      setSelectedCertification(null);
+      setIsFormModalOpen(true);
+    };
+
     const handleEditClick = (cert: Certification) => {
       setSelectedCertification(cert);
-      setIsEditModalOpen(true);
+      setIsFormModalOpen(true);
     };
 
     const handleDeleteClick = (cert: Certification) => {
@@ -70,17 +73,20 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
 
     const renderModals = () => (
       <>
-        <AddCertificationModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
-        <EditCertificationModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} certification={selectedCertification} />
-        <DeleteConfirmationModal
-                  isOpen={isDeleteModalOpen}
-                  onClose={() => setIsDeleteModalOpen(false)}
-                  onConfirm={async () => {
-                    if (!selectedCertification) return;
-                    return deleteCertification(selectedCertification.id);
-                  }}
-                  itemName="project"
-         />
+        <CertificationFormModal 
+          isOpen={isFormModalOpen} 
+          onClose={() => setIsFormModalOpen(false)} 
+          certification={selectedCertification} 
+        />
+        <DeleteConfirmationModal 
+          isOpen={isDeleteModalOpen} 
+          onClose={() => setIsDeleteModalOpen(false)} 
+          onConfirm={async () => {
+            if (!selectedCertification) return;
+            return deleteCertification(selectedCertification.id);
+          }}
+          itemName="certification"
+        />
       </>
     );
 
@@ -92,7 +98,7 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
         items={allCertifications}
         renderItem={renderItem}
         renderModals={renderModals}
-        onAddItem={() => setIsAddModalOpen(true)}
+        onAddItem={handleAddClick}
         itemsPerPage={3}
       />
     );
