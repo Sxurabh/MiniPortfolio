@@ -5,7 +5,8 @@ import { useSession } from "next-auth/react";
 import type { WorkExperience } from "@/lib/types";
 import { AddWorkModal } from "@/components/modals/AddWorkModal";
 import { EditWorkModal } from "@/components/modals/EditWorkModal";
-import { DeleteWorkModal } from "@/components/modals/DeleteWorkModal";
+import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"; // Import the new modal
+import { deleteWorkExperience} from "@/actions/work"; // Import the delete action
 import { Edit, Trash2 } from "lucide-react";
 import { GenericCrudSection } from "./GenericCrudSection";
 
@@ -65,7 +66,14 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
       <>
         <AddWorkModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
         <EditWorkModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} workExperience={selectedWork} />
-        <DeleteWorkModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} workExperienceId={selectedWork?.id ?? null} />
+        <DeleteConfirmationModal
+                  isOpen={isDeleteModalOpen}
+                  onClose={() => setIsDeleteModalOpen(false)}
+                  onConfirm={async () => {
+                    if (!selectedWork) return;
+                    return deleteWorkExperience(selectedWork.id);
+                  }}
+                  itemName="project" />
       </>
     );
 

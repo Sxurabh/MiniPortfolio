@@ -6,7 +6,8 @@ import { Github, ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Project } from "@/lib/types";
 import { AddProjectModal } from "@/components/modals/AddProjectModal";
 import { EditProjectModal } from "@/components/modals/EditProjectModal";
-import { DeleteProjectModal } from "@/components/modals/DeleteProjectModal";
+import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"; // Import the new modal
+import { deleteProject } from "@/actions/project"; // Import the delete action
 import { GenericCrudSection } from "./GenericCrudSection";
 
 interface ProjectsSectionProps {
@@ -68,7 +69,15 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
       <>
         <AddProjectModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
         <EditProjectModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} project={selectedProject} />
-        <DeleteProjectModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} projectId={selectedProject?.id ?? null} />
+        <DeleteConfirmationModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={async () => {
+            if (!selectedProject) return;
+            return deleteProject(selectedProject.id);
+          }}
+          itemName="project"
+        />
       </>
     );
 

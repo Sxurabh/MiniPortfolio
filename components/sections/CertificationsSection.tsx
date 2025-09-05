@@ -6,7 +6,8 @@ import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Certification } from "@/lib/types";
 import { AddCertificationModal } from "@/components/modals/AddCertificationModal";
 import { EditCertificationModal } from "@/components/modals/EditCertificationModal";
-import { DeleteCertificationModal } from "@/components/modals/DeleteCertificationModal";
+import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"; // Import the new modal
+import { deleteCertification } from "@/actions/certification"; // Import the delete action
 import { GenericCrudSection } from "./GenericCrudSection";
 
 interface CertificationsSectionProps {
@@ -71,7 +72,15 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
       <>
         <AddCertificationModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
         <EditCertificationModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} certification={selectedCertification} />
-        <DeleteCertificationModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} certificationId={selectedCertification?.id ?? null} />
+        <DeleteConfirmationModal
+                  isOpen={isDeleteModalOpen}
+                  onClose={() => setIsDeleteModalOpen(false)}
+                  onConfirm={async () => {
+                    if (!selectedCertification) return;
+                    return deleteCertification(selectedCertification.id);
+                  }}
+                  itemName="project"
+         />
       </>
     );
 

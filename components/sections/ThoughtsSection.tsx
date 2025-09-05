@@ -7,7 +7,9 @@ import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Thought } from "@/lib/types";
 import { AddThoughtModal } from "@/components/modals/AddThoughtModal";
 import { EditThoughtModal } from "@/components/modals/EditThoughtModal";
-import { DeleteThoughtModal } from "@/components/modals/DeleteThoughtModal";
+import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal"; // Import the new modal
+import { deleteThought } from "@/actions/thought"; // Import the delete action
+
 import { GenericCrudSection } from "./GenericCrudSection";
 
 interface ThoughtsSectionProps {
@@ -63,7 +65,15 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
       <>
         <AddThoughtModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
         <EditThoughtModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} thought={selectedThought} />
-        <DeleteThoughtModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} thoughtId={selectedThought?.id ?? null} />
+        <DeleteConfirmationModal
+                  isOpen={isDeleteModalOpen}
+                  onClose={() => setIsDeleteModalOpen(false)}
+                  onConfirm={async () => {
+                    if (!selectedThought) return;
+                    return deleteThought(selectedThought.id);
+                  }}
+                  itemName="project"
+        />
       </>
     );
     

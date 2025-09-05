@@ -5,8 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { projectSchema, type ProjectFormValues } from "@/lib/schemas";
 import { addProject } from "@/actions/project";
-import { X } from "lucide-react";
 import { toast } from "sonner";
+import { CrudModal } from "./CrudModal"; // Import new component
+import { FormButtons } from "./FormButtons"; // Import new component
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -34,58 +35,45 @@ export const AddProjectModal = ({ isOpen, onClose }: AddProjectModalProps) => {
     });
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative w-full max-w-lg p-8 space-y-6 bg-background border border-border rounded-lg shadow-xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold">Add New Project</h3>
-          <button onClick={onClose} className="p-1 rounded-full text-muted-foreground hover:bg-accent transition-colors"><X className="w-4 h-4" /></button>
+    <CrudModal isOpen={isOpen} onClose={onClose} title="Add New Project">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-muted-foreground mb-1">Title</label>
+            <input id="title" {...register("title")} className="w-full input-style" />
+            {errors.title && <p className="form-error">{errors.title.message}</p>}
+          </div>
+          <div>
+            <label htmlFor="year" className="block text-sm font-medium text-muted-foreground mb-1">Year</label>
+            <input id="year" {...register("year")} className="w-full input-style" />
+            {errors.year && <p className="form-error">{errors.year.message}</p>}
+          </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-muted-foreground mb-1">Title</label>
-              <input id="title" {...register("title")} className="w-full input-style" />
-              {errors.title && <p className="form-error">{errors.title.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="year" className="block text-sm font-medium text-muted-foreground mb-1">Year</label>
-              <input id="year" {...register("year")} className="w-full input-style" />
-              {errors.year && <p className="form-error">{errors.year.message}</p>}
-            </div>
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-muted-foreground mb-1">Description</label>
+          <textarea id="description" {...register("description")} rows={3} className="w-full input-style" />
+          {errors.description && <p className="form-error">{errors.description.message}</p>}
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="github" className="block text-sm font-medium text-muted-foreground mb-1">GitHub URL</label>
+            <input id="github" {...register("github")} className="w-full input-style" />
+            {errors.github && <p className="form-error">{errors.github.message}</p>}
           </div>
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-muted-foreground mb-1">Description</label>
-            <textarea id="description" {...register("description")} rows={3} className="w-full input-style" />
-            {errors.description && <p className="form-error">{errors.description.message}</p>}
+            <label htmlFor="live" className="block text-sm font-medium text-muted-foreground mb-1">Live URL</label>
+            <input id="live" {...register("live")} className="w-full input-style" />
+            {errors.live && <p className="form-error">{errors.live.message}</p>}
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="github" className="block text-sm font-medium text-muted-foreground mb-1">GitHub URL</label>
-              <input id="github" {...register("github")} className="w-full input-style" />
-              {errors.github && <p className="form-error">{errors.github.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="live" className="block text-sm font-medium text-muted-foreground mb-1">Live URL</label>
-              <input id="live" {...register("live")} className="w-full input-style" />
-              {errors.live && <p className="form-error">{errors.live.message}</p>}
-            </div>
-          </div>
-          <div>
-            <label htmlFor="tech" className="block text-sm font-medium text-muted-foreground mb-1">Technologies (comma-separated)</label>
-            <input id="tech" {...register("tech")} className="w-full input-style" />
-            {errors.tech && <p className="form-error">{errors.tech.message}</p>}
-          </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium border border-border rounded-md hover:bg-accent transition-colors">Cancel</button>
-            <button type="submit" disabled={isPending} className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 transition-colors">
-              {isPending ? "Saving..." : "Save Project"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
+        <div>
+          <label htmlFor="tech" className="block text-sm font-medium text-muted-foreground mb-1">Technologies (comma-separated)</label>
+          <input id="tech" {...register("tech")} className="w-full input-style" />
+          {errors.tech && <p className="form-error">{errors.tech.message}</p>}
+        </div>
+        <FormButtons onClose={onClose} isPending={isPending} submitText="Save Project" />
+      </form>
+    </CrudModal>
   );
 };
