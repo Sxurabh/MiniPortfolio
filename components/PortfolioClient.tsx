@@ -9,10 +9,9 @@ import { CertificationsSection } from "@/components/sections/CertificationsSecti
 import { ThoughtsSection } from "@/components/sections/ThoughtsSection"
 import { ConnectSection } from "@/components/sections/ConnectSection"
 import { Footer } from "@/components/Footer"
-import type { Session } from "next-auth" // Import the Session type
+import type { Session } from "next-auth"
 import type { Project, Certification, Thought, WorkExperience, SocialLink } from '@/lib/types'
 
-// Add the `session` property to the interface
 interface PortfolioClientProps {
     session: Session | null;
     allProjects: Project[];
@@ -20,15 +19,17 @@ interface PortfolioClientProps {
     allThoughts: Thought[];
     workExperience: WorkExperience[];
     socialLinks: SocialLink[];
+    cvExists: boolean;
 }
 
 export default function PortfolioClient({
-    session, // Destructure the session prop
+    session,
     allProjects,
     allCertifications,
     allThoughts,
     workExperience,
-    socialLinks
+    socialLinks,
+    cvExists
 }: PortfolioClientProps) {
   const [isDark, setIsDark] = useState(true)
   const [activeSection, setActiveSection] = useState("intro")
@@ -73,7 +74,7 @@ export default function PortfolioClient({
       <Nav activeSection={activeSection} />
 
       <main className="max-w-4xl mx-auto px-8 lg:px-16">
-        <IntroSection ref={(el) => {sectionRefs.current[0] = el}} isDark={isDark} toggleTheme={toggleTheme} />
+        <IntroSection ref={(el) => {sectionRefs.current[0] = el}} isDark={isDark} toggleTheme={toggleTheme} cvExists={cvExists} />
         <WorkSection ref={(el) => {sectionRefs.current[1] = el}} workExperience={workExperience} />
         <ProjectsSection ref={(el) => {sectionRefs.current[2] = el}} allProjects={allProjects} />
         <CertificationsSection ref={(el) => {sectionRefs.current[3] = el}} allCertifications={allCertifications} />

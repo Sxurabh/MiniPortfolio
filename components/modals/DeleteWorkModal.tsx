@@ -2,6 +2,8 @@
 
 import React, { useTransition } from "react";
 import { deleteWorkExperience } from "@/actions/work";
+import { toast } from "sonner";
+
 
 interface DeleteWorkModalProps {
   isOpen: boolean;
@@ -15,8 +17,15 @@ export const DeleteWorkModal = ({ isOpen, onClose, workExperienceId }: DeleteWor
   const handleDelete = () => {
     if (!workExperienceId) return;
     startTransition(() => {
-      deleteWorkExperience(workExperienceId).then(() => {
-        onClose();
+      deleteWorkExperience(workExperienceId).then((data) => {
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          onClose();
+        }
+        
       });
     });
   };

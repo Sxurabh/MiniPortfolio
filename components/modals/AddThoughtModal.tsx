@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { thoughtSchema, type ThoughtFormValues } from "@/lib/schemas";
 import { addThought } from "@/actions/thought";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 interface AddThoughtModalProps {
   isOpen: boolean;
@@ -23,11 +24,14 @@ export const AddThoughtModal = ({ isOpen, onClose }: AddThoughtModalProps) => {
     setError("");
     startTransition(() => {
       addThought(values).then((data) => {
-        if (data.error) setError(data.error);
-        if (data.success) {
-          reset();
-          onClose();
-        }
+              if (data.error) {
+                toast.error(data.error);
+              }
+              if (data.success) {
+                toast.success(data.success);
+                reset();
+                onClose();
+              }
       });
     });
   };

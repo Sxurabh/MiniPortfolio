@@ -2,6 +2,7 @@
 
 import React, { useTransition } from "react";
 import { deleteProject } from "@/actions/project";
+import { toast } from "sonner";
 
 interface DeleteProjectModalProps {
   isOpen: boolean;
@@ -15,8 +16,14 @@ export const DeleteProjectModal = ({ isOpen, onClose, projectId }: DeleteProject
   const handleDelete = () => {
     if (!projectId) return;
     startTransition(() => {
-      deleteProject(projectId).then(() => {
-        onClose();
+      deleteProject(projectId).then((data) => {
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          onClose();
+        }
       });
     });
   };

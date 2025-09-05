@@ -3,23 +3,23 @@
 import React, { useState, ReactNode } from "react";
 import { useSession } from "next-auth/react";
 
-interface GenericCrudSectionProps<T> {
+interface GenericCrudSectionProps<T extends { id: any }> {
   id: string;
   title: string;
   items: T[];
   renderItem: (item: T) => ReactNode;
-  renderModals: (selectedItem: T | null, closeModals: () => void) => ReactNode;
+  renderModals: () => ReactNode;
   onAddItem: () => void;
   itemsPerPage: number;
+  gridClass?: string;
 }
 
 export const GenericCrudSection = React.forwardRef<
   HTMLElement,
   GenericCrudSectionProps<any>
->(({ id, title, items, renderItem, renderModals, onAddItem, itemsPerPage }, ref) => {
+>(({ id, title, items, renderItem, renderModals, onAddItem, itemsPerPage, gridClass = "space-y-12" }, ref) => {
   const { data: session } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedItem, setSelectedItem] = useState<any | null>(null);
 
   const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
@@ -30,13 +30,9 @@ export const GenericCrudSection = React.forwardRef<
     return items.slice(startIndex, startIndex + itemsPerPage);
   };
 
-  const closeModals = () => {
-    setSelectedItem(null);
-  };
-
   return (
     <>
-      {renderModals(selectedItem, closeModals)}
+      {isAdmin && renderModals()}
       <section id={id} ref={ref} className="min-h-screen py-32 opacity-0">
         <div className="space-y-16">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
@@ -48,14 +44,23 @@ export const GenericCrudSection = React.forwardRef<
                 </button>
               )}
             </div>
-            <div className="text-sm text-muted-foreground font-mono">
-              {(currentPage - 1) * itemsPerPage + 1}-
-              {Math.min(currentPage * itemsPerPage, items.length)} of {items.length}
-            </div>
+            {items.length > 0 && (
+                <div className="text-sm text-muted-foreground font-mono">
+                {(currentPage - 1) * itemsPerPage + 1}-
+                {Math.min(currentPage * itemsPerPage, items.length)} of {items.length}
+              </div>
+            )}
           </div>
 
-          <div className="space-y-12">
-            {getPaginatedItems().map((item) => renderItem(item))}
+          <div className={gridClass}>
+            {items.length > 0 ? (
+                getPaginatedItems().map((item) => renderItem(item))
+            ) : (
+                <div className="text-center text-muted-foreground py-16">
+                    <p>There are no items to display yet.</p>
+                    {isAdmin && <p className="text-sm mt-2">Click "Add New" to get started.</p>}
+                </div>
+            )}
           </div>
 
           {totalPages > 1 && (

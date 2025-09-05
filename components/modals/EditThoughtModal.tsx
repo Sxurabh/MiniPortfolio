@@ -7,6 +7,9 @@ import { updateThoughtSchema, type UpdateThoughtFormValues } from "@/lib/schemas
 import { updateThought } from "@/actions/thought";
 import { X } from "lucide-react";
 import type { Thought } from "@/lib/types";
+import { toast } from "sonner";
+
+
 
 interface EditThoughtModalProps {
   isOpen: boolean;
@@ -38,8 +41,14 @@ export const EditThoughtModal = ({ isOpen, onClose, thought }: EditThoughtModalP
     setError("");
     startTransition(() => {
       updateThought(values).then((data) => {
-        if (data.error) setError(data.error);
-        if (data.success) onClose();
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          reset();
+          onClose();
+        }
       });
     });
   };

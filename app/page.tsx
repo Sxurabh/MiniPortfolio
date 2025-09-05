@@ -3,6 +3,8 @@ import PortfolioClient from "@/components/PortfolioClient"
 import type { SocialLink } from '@/lib/types'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import fs from "fs/promises";
+import path from "path";
 
 const prisma = new PrismaClient()
 
@@ -14,9 +16,8 @@ const socialLinks: SocialLink[] = [
 ];
 
 export default async function Home() {
-  // Fetch the session on the server using getServerSession 
   const session = await getServerSession(authOptions);
-  
+
   const allProjects = await prisma.project.findMany({
     orderBy: { year: 'desc' }
   });
@@ -30,6 +31,15 @@ export default async function Home() {
     orderBy: { year: 'desc' }
   });
 
+  const cvFilePath = path.join(process.cwd(), "public", "cv-saurabh-kirve.pdf");
+  let cvExists = false;
+  try {
+    await fs.access(cvFilePath);
+    cvExists = true;
+  } catch (error) {
+    // File doesn't exist
+  }
+
   return (
     <PortfolioClient
         session={session}
@@ -38,6 +48,7 @@ export default async function Home() {
         allThoughts={allThoughts}
         workExperience={workExperience}
         socialLinks={socialLinks}
+        cvExists={cvExists}
     />
   )
 }

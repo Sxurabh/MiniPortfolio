@@ -7,6 +7,8 @@ import { updateCertificationSchema, type UpdateCertificationFormValues } from "@
 import { updateCertification } from "@/actions/certification";
 import { X } from "lucide-react";
 import type { Certification } from "@/lib/types";
+import { toast } from "sonner";
+
 
 interface EditCertificationModalProps {
   isOpen: boolean;
@@ -39,8 +41,14 @@ export const EditCertificationModal = ({ isOpen, onClose, certification }: EditC
     setError("");
     startTransition(() => {
       updateCertification(values).then((data) => {
-        if (data.error) setError(data.error);
-        if (data.success) onClose();
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          reset();
+          onClose();
+        }
       });
     });
   };

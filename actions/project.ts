@@ -7,9 +7,6 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { projectSchema, updateProjectSchema } from "@/lib/schemas";
 
-
-
-// Helper function to check admin authentication
 async function checkAdminAuth() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {

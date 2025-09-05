@@ -7,6 +7,8 @@ import { updateWorkExperienceSchema, type UpdateWorkExperienceFormValues } from 
 import { updateWorkExperience } from "@/actions/work";
 import { X } from "lucide-react";
 import type { WorkExperience } from "@/lib/types";
+import { toast } from "sonner";
+
 
 interface EditWorkModalProps {
   isOpen: boolean;
@@ -47,8 +49,13 @@ export const EditWorkModal = ({ isOpen, onClose, workExperience }: EditWorkModal
     setError("");
     startTransition(() => {
       updateWorkExperience(values).then((data) => {
-        if (data.error) setError(data.error);
-        if (data.success) onClose();
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          
+        }
       });
     });
   };

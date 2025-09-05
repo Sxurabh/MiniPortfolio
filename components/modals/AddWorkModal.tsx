@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { workExperienceSchema, type WorkExperienceFormValues } from "@/lib/schemas";
 import { addWorkExperience } from "@/actions/work";
+import { toast } from "sonner"
 import { X } from "lucide-react";
 
 interface AddWorkModalProps {
@@ -43,9 +44,10 @@ export const AddWorkModal = ({ isOpen, onClose }: AddWorkModalProps) => {
     startTransition(() => {
       addWorkExperience(values).then((data) => {
         if (data.error) {
-          setError(data.error);
+          toast.error(data.error);
         }
         if (data.success) {
+          toast.success(data.success);
           reset();
           onClose();
         }

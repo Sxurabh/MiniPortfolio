@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { projectSchema, type ProjectFormValues } from "@/lib/schemas";
 import { addProject } from "@/actions/project";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -13,18 +14,19 @@ interface AddProjectModalProps {
 }
 
 export const AddProjectModal = ({ isOpen, onClose }: AddProjectModalProps) => {
-  const [error, setError] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
   const { register, handleSubmit, formState: { errors }, reset } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
   });
 
   const onSubmit = (values: ProjectFormValues) => {
-    setError("");
     startTransition(() => {
       addProject(values).then((data) => {
-        if (data.error) setError(data.error);
+        if (data.error) {
+          toast.error(data.error);
+        }
         if (data.success) {
+          toast.success(data.success);
           reset();
           onClose();
         }
@@ -76,7 +78,6 @@ export const AddProjectModal = ({ isOpen, onClose }: AddProjectModalProps) => {
             <input id="tech" {...register("tech")} className="w-full input-style" />
             {errors.tech && <p className="form-error">{errors.tech.message}</p>}
           </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium border border-border rounded-md hover:bg-accent transition-colors">Cancel</button>
             <button type="submit" disabled={isPending} className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 transition-colors">

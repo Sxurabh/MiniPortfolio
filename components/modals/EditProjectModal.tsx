@@ -7,6 +7,8 @@ import { updateProjectSchema, type UpdateProjectFormValues } from "@/lib/schemas
 import { updateProject } from "@/actions/project";
 import { X } from "lucide-react";
 import type { Project } from "@/lib/types";
+import { toast } from "sonner";
+
 
 interface EditProjectModalProps {
   isOpen: boolean;
@@ -39,8 +41,14 @@ export const EditProjectModal = ({ isOpen, onClose, project }: EditProjectModalP
     setError("");
     startTransition(() => {
       updateProject(values).then((data) => {
-        if (data.error) setError(data.error);
-        if (data.success) onClose();
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          reset();
+          onClose();
+        }
       });
     });
   };

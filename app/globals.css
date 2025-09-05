@@ -17,7 +17,7 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0); 
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -52,8 +52,8 @@
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --destructive: oklch(0.53 0.2 25);
+  --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
@@ -129,7 +129,15 @@
   }
 }
 
-/* Added smooth theme toggle animations */
+@layer components {
+    .input-style {
+      @apply w-full px-3 py-2 bg-transparent border border-border rounded-md text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors;
+    }
+    .form-error {
+      @apply text-xs text-destructive mt-1;
+    }
+}
+
 @layer utilities {
   .animate-fade-in-up {
     animation: fadeInUp 0.8s ease-out forwards;
@@ -146,132 +154,31 @@
     }
   }
 
-  /* Smooth icon rotation animation for theme toggle */
-  .theme-icon-transition {
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-  }
-
-  .theme-icon-rotate {
-    transform: rotate(180deg);
-  }
-
-  /* Enhanced vintage polaroid photo styles for authentic retro effect */
-  .polaroid-photo {
-    position: relative;
-    display: inline-block;
-    /* Force vintage cream background in both light and dark modes */
-    background: linear-gradient(145deg, #f9f7f4 0%, #f5f2ed 50%, #f1ede6 100%) !important;
-    padding: 12px 12px 40px 12px;
-    /* Enhanced shadow for more realistic vintage depth */
-    box-shadow:
-      0 2px 4px rgba(139, 125, 110, 0.15),
-      0 8px 16px rgba(139, 125, 110, 0.2),
-      0 16px 32px rgba(139, 125, 110, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -1px 0 rgba(139, 125, 110, 0.1);
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    border-radius: 2px;
-    transform-origin: center center;
-    /* Added subtle aging texture */
-    background-image: radial-gradient(circle at 20% 80%, rgba(139, 125, 110, 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(139, 125, 110, 0.03) 0%, transparent 50%);
-  }
-
-  .polaroid-photo:hover {
-    transform: scale(1.05) translateY(-8px);
-    /* Enhanced hover shadow with vintage brown tones */
-    box-shadow:
-      0 4px 8px rgba(139, 125, 110, 0.2),
-      0 16px 32px rgba(139, 125, 110, 0.25),
-      0 24px 48px rgba(139, 125, 110, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6),
-      inset 0 -1px 0 rgba(139, 125, 110, 0.15);
-    z-index: 10;
-  }
-
-  /* Enhanced vintage photo filter for more authentic aged look */
-  .polaroid-photo img {
-    filter: sepia(12%) saturate(1.08) contrast(1.03) brightness(0.96) hue-rotate(5deg);
-    transition: filter 0.3s ease;
-  }
-
-  .polaroid-photo:hover img {
-    filter: sepia(8%) saturate(1.12) contrast(1.06) brightness(0.98) hue-rotate(3deg);
-  }
-
-  /* Enhanced handwriting-style font with vintage character */
-  .font-handwriting {
-    font-family: var(--font-kalam), "Comic Sans MS", cursive;
-    font-weight: 400;
-    letter-spacing: 0.8px;
-    /* Force vintage text color in both light and dark modes */
-    color: #4a453f !important;
-    text-shadow: 0 1px 2px rgba(139, 125, 110, 0.15);
-    font-size: 0.85rem;
-    line-height: 1.2;
-  }
-
-  /* Individual rotation classes for scattered vintage look */
-  .rotate-1 {
-    transform: rotate(1.5deg);
-  }
-  .rotate-2 {
-    transform: rotate(-2deg);
-  }
-  .rotate-3 {
-    transform: rotate(0.8deg);
-  }
-  .rotate-4 {
-    transform: rotate(-1.2deg);
-  }
-  .rotate-5 {
-    transform: rotate(1.8deg);
-  }
-  .rotate-6 {
-    transform: rotate(-0.5deg);
-  }
-  .rotate-7 {
-    transform: rotate(2.2deg);
-  }
-  .rotate-8 {
-    transform: rotate(-1.8deg);
-  }
-  .rotate-9 {
-    transform: rotate(0.3deg);
-  }
-
-  /* Preserve rotation on hover while adding scale */
-  .polaroid-photo.rotate-1:hover {
-    transform: rotate(1.5deg) scale(1.05) translateY(-8px);
-  }
-  .polaroid-photo.rotate-2:hover {
-    transform: rotate(-2deg) scale(1.05) translateY(-8px);
-  }
-  .polaroid-photo.rotate-3:hover {
-    transform: rotate(0.8deg) scale(1.05) translateY(-8px);
-  }
-  .polaroid-photo.rotate-4:hover {
-    transform: rotate(-1.2deg) scale(1.05) translateY(-8px);
-  }
-  .polaroid-photo.rotate-5:hover {
-    transform: rotate(1.8deg) scale(1.05) translateY(-8px);
-  }
-  .polaroid-photo.rotate-6:hover {
-    transform: rotate(-0.5deg) scale(1.05) translateY(-8px);
-  }
-  .polaroid-photo.rotate-7:hover {
-    transform: rotate(2.2deg) scale(1.05) translateY(-8px);
-  }
-  .polaroid-photo.rotate-8:hover {
-    transform: rotate(-1.8deg) scale(1.05) translateY(-8px);
-  }
-  .polaroid-photo.rotate-9:hover {
-    transform: rotate(0.3deg) scale(1.05) translateY(-8px);
+  .grid-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
   }
 }
-.grid-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
+
+/* Custom Sonner Toast Styles */
+[data-sonner-toast] {
+  @apply !bg-background !border-border !text-foreground !font-sans;
+  @apply !rounded-lg !shadow-lg;
+  @apply !border-l-4;
+}
+
+[data-sonner-toast] .close-button {
+ @apply !bg-accent !text-muted-foreground;
+}
+
+/* Success state has a green left border */
+[data-sonner-toast][data-type="success"] {
+  border-left-color: oklch(0.65 0.2 150) !important;
+}
+
+/* Error state uses the destructive color for the left border */
+[data-sonner-toast][data-type="error"] {
+  @apply !border-l-destructive;
 }

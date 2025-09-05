@@ -2,6 +2,8 @@
 
 import React, { useTransition } from "react";
 import { deleteThought } from "@/actions/thought";
+import { toast } from "sonner";
+
 
 interface DeleteThoughtModalProps {
   isOpen: boolean;
@@ -15,8 +17,14 @@ export const DeleteThoughtModal = ({ isOpen, onClose, thoughtId }: DeleteThought
   const handleDelete = () => {
     if (!thoughtId) return;
     startTransition(() => {
-      deleteThought(thoughtId).then(() => {
-        onClose();
+      deleteThought(thoughtId).then((data) => {
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          onClose();
+        }
       });
     });
   };

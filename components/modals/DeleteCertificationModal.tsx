@@ -2,6 +2,8 @@
 
 import React, { useTransition } from "react";
 import { deleteCertification } from "@/actions/certification";
+import { toast } from "sonner";
+
 
 interface DeleteCertificationModalProps {
   isOpen: boolean;
@@ -15,8 +17,14 @@ export const DeleteCertificationModal = ({ isOpen, onClose, certificationId }: D
   const handleDelete = () => {
     if (!certificationId) return;
     startTransition(() => {
-      deleteCertification(certificationId).then(() => {
-        onClose();
+      deleteCertification(certificationId).then((data) => {
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          onClose();
+        }
       });
     });
   };

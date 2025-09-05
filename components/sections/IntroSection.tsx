@@ -1,13 +1,23 @@
 "use client"
 
-import React from "react"
+import React, { useState, useTransition } from "react"
+import { useSession } from "next-auth/react";
+import { uploadCv, deleteCv } from "@/actions/cv";
 
 interface IntroSectionProps {
   isDark: boolean
   toggleTheme: () => void
+  cvExists: boolean
 }
 
-export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ isDark, toggleTheme }, ref) => {
+export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ isDark, toggleTheme, cvExists: initialCvExists }, ref) => {
+  const { data: session } = useSession();
+  const [cvExists, setCvExists] = useState(initialCvExists);
+  const [isPending, startTransition] = useTransition();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
   const handleDownloadCV = () => {
     const link = document.createElement("a")
     link.href = "/cv-saurabh-kirve.pdf"
@@ -16,6 +26,37 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
     link.click()
     document.body.removeChild(link)
   }
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("cv", file);
+      startTransition(async () => {
+        const result = await uploadCv(formData);
+        if (result.success) {
+          setCvExists(true);
+        } else {
+          console.error(result.error);
+        }
+      });
+    }
+  };
+
+  const handleDeleteCv = () => {
+    startTransition(async () => {
+      const result = await deleteCv();
+      if (result.success) {
+        setCvExists(false);
+      } else {
+        console.error(result.error);
+      }
+    });
+  };
 
   return (
     <header id="intro" ref={ref} className="min-h-screen flex items-center opacity-0">
@@ -48,26 +89,41 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
               <span className="text-foreground"> human behavior</span>.
             </p>
 
-            <div className="pt-2">
-              <button
-                onClick={handleDownloadCV}
-                className="group flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 text-foreground hover:text-foreground/90 text-xs"
-              >
-                <svg
-                  className="w-4 h-4 transition-colors duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            <div className="pt-2 flex items-center gap-2">
+              {cvExists && (
+                <button
+                  onClick={handleDownloadCV}
+                  className="group flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 text-foreground hover:text-foreground/90 text-xs"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <span className="border-0 text-foreground">My Life on Paper</span>
-              </button>
+                  <svg
+                    className="w-4 h-4 transition-colors duration-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <span className="border-0 text-foreground">My Life on Paper</span>
+                </button>
+              )}
+              {isAdmin && (
+                <>
+                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".pdf" />
+                  <button onClick={handleUploadClick} disabled={isPending} className="px-3 py-1.5 text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors">
+                    {isPending ? 'Uploading...' : 'Upload CV'}
+                  </button>
+                  {cvExists && (
+                    <button onClick={handleDeleteCv} disabled={isPending} className="px-3 py-1.5 text-xs rounded-md border border-destructive/50 text-destructive hover:border-destructive transition-colors">
+                      {isPending ? 'Deleting...' : 'Delete CV'}
+                    </button>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

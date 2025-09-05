@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { certificationSchema, type CertificationFormValues } from "@/lib/schemas";
 import { addCertification } from "@/actions/certification";
 import { X } from "lucide-react";
+import { toast } from "sonner";
+
 
 interface AddCertificationModalProps {
   isOpen: boolean;
@@ -23,8 +25,11 @@ export const AddCertificationModal = ({ isOpen, onClose }: AddCertificationModal
     setError("");
     startTransition(() => {
       addCertification(values).then((data) => {
-        if (data.error) setError(data.error);
+        if (data.error) {
+          toast.error(data.error);
+        }
         if (data.success) {
+          toast.success(data.success);
           reset();
           onClose();
         }
