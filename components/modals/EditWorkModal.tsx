@@ -54,7 +54,8 @@ export const EditWorkModal = ({ isOpen, onClose, workExperience }: EditWorkModal
         }
         if (data.success) {
           toast.success(data.success);
-          
+          form.reset();
+          onClose();
         }
       });
     });

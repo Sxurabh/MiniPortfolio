@@ -1,22 +1,33 @@
 "use client"
 
-import React, { useState, useTransition } from "react"
+import React, { useState, useTransition, useEffect } from "react"
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import { uploadCv, deleteCv } from "@/actions/cv";
 
 interface IntroSectionProps {
-  isDark: boolean
-  toggleTheme: () => void
   cvExists: boolean
 }
 
-export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ isDark, toggleTheme, cvExists: initialCvExists }, ref) => {
+export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ cvExists: initialCvExists }, ref) => {
   const { data: session } = useSession();
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
+  
+  // When mounted on client, now we can show the UI
+  useEffect(() => setMounted(true), []);
+
+  const isDark = theme === 'dark';
+
   const [cvExists, setCvExists] = useState(initialCvExists);
   const [isPending, startTransition] = useTransition();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
+  const toggleTheme = () => {
+    setTheme(isDark ? 'light' : 'dark');
+  };
 
   const handleDownloadCV = () => {
     const link = document.createElement("a")
@@ -58,6 +69,25 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
     });
   };
 
+  const renderThemeToggle = () => {
+    if (!mounted) {
+      // Render a placeholder to prevent layout shift
+      return <div className="px-3 py-1.5 w-[88px] h-[30px] rounded-md border border-border" />;
+    }
+    
+    return (
+      <button
+        onClick={toggleTheme}
+        aria-pressed={isDark}
+        aria-label={isDark ? "Turn lights on" : "Turn lights off"}
+        className="px-3 py-1.5 text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors"
+      >
+        {isDark ? "Lights on!" : "Lights out!"}
+      </button>
+    );
+  };
+
+
   return (
     <header id="intro" ref={ref} className="min-h-screen flex items-center opacity-0">
       <div className="grid lg:grid-cols-5 gap-16 w-full">
@@ -70,14 +100,9 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
                 <br />
                 <span className="text-muted-foreground">Kirve</span>
               </h1>
-              <button
-                onClick={toggleTheme}
-                aria-pressed={isDark}
-                aria-label={isDark ? "Turn lights on" : "Turn lights off"}
-                className="lg:hidden px-3 py-1.5 text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors"
-              >
-                {isDark ? "Lights out!" : "Lights on!"}
-              </button>
+              <div className="lg:hidden">
+                {renderThemeToggle()}
+              </div>
             </div>
           </div>
 
@@ -130,14 +155,7 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
 
         <div className="lg:col-span-2 flex flex-col justify-end space-y-8">
           <div className="hidden lg:flex items-center justify-end">
-            <button
-              onClick={toggleTheme}
-              aria-pressed={isDark}
-              aria-label={isDark ? "Turn lights on" : "Turn lights off"}
-              className="px-3 py-1.5 text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors"
-            >
-              {isDark ? "Lights out!" : "Lights on!"}
-            </button>
+             {renderThemeToggle()}
           </div>
 
           <div className="space-y-4">

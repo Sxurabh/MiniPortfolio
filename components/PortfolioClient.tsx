@@ -31,14 +31,8 @@ export default function PortfolioClient({
     socialLinks,
     cvExists
 }: PortfolioClientProps) {
-  const [isDark, setIsDark] = useState(true)
   const [activeSection, setActiveSection] = useState("intro")
   const sectionRefs = useRef<(HTMLElement | null)[]>([])
-
-  useEffect(() => {
-    document.documentElement.style.transition = "background-color 0.2s ease, color 0.2s ease"
-    document.documentElement.classList.toggle("dark", isDark)
-  }, [isDark])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -65,16 +59,12 @@ export default function PortfolioClient({
     }
   }, [])
 
-  const toggleTheme = () => {
-    setIsDark(!isDark)
-  }
-
   return (
-    <div className="min-h-screen bg-background text-foreground relative transition-all duration-500">
+    <div className="min-h-screen bg-background text-foreground relative transition-colors duration-500">
       <Nav activeSection={activeSection} />
 
       <main className="max-w-4xl mx-auto px-8 lg:px-16">
-        <IntroSection ref={(el) => {sectionRefs.current[0] = el}} isDark={isDark} toggleTheme={toggleTheme} cvExists={cvExists} />
+        <IntroSection ref={(el) => {sectionRefs.current[0] = el}} cvExists={cvExists} />
         <WorkSection ref={(el) => {sectionRefs.current[1] = el}} workExperience={workExperience} />
         <ProjectsSection ref={(el) => {sectionRefs.current[2] = el}} allProjects={allProjects} />
         <CertificationsSection ref={(el) => {sectionRefs.current[3] = el}} allCertifications={allCertifications} />

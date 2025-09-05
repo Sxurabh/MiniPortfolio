@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Kalam } from "next/font/google"
 import AuthProvider from "@/components/AuthProvider"
+import { ThemeProvider } from "@/components/ThemeProvider"
 import { Toaster } from "sonner"
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -36,16 +37,23 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${kalam.variable}`}>
+    <html lang="en" className={`${inter.variable} ${kalam.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className="font-sans antialiased">
         <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
             {children}
             <Toaster closeButton />
             <Analytics />
             <SpeedInsights />
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
