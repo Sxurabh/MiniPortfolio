@@ -53,7 +53,7 @@ export const CertificationsSection = React.forwardRef<
 
       <section id="certifications" ref={ref} className="min-h-screen py-32 opacity-0">
         <div className="space-y-16">
-          <div className="flex items-end justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div className="flex items-center gap-4">
               <h2 className="text-4xl font-light">Certifications</h2>
               {isAdmin && (
@@ -86,9 +86,7 @@ export const CertificationsSection = React.forwardRef<
                   <p className="text-muted-foreground leading-relaxed max-w-lg">{cert.description}</p>
                 </div>
 
-                {/* MODIFIED SECTION: Pills and Admin buttons are now stacked vertically */}
                 <div className="lg:col-span-4 flex flex-col gap-2 lg:items-end">
-                  {/* Credential and View Pills */}
                   <div className="flex items-center gap-3">
                     <span className="px-3 py-1 text-xs border border-border rounded-lg text-muted-foreground group-hover:border-muted-foreground/50 transition-colors duration-300">
                       {cert.credential}
@@ -99,7 +97,6 @@ export const CertificationsSection = React.forwardRef<
                     </a>
                   </div>
 
-                  {/* Admin Buttons - Appear on hover */}
                   {isAdmin && (
                     <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <button onClick={() => handleEditClick(cert)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit certification"><Edit className="w-4 h-4" /></button>
@@ -111,7 +108,6 @@ export const CertificationsSection = React.forwardRef<
             ))}
           </div>
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-4">
               <button

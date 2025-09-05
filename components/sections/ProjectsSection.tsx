@@ -53,7 +53,7 @@ export const ProjectsSection = React.forwardRef<
 
       <section id="projects" ref={ref} className="min-h-screen py-32 opacity-0">
         <div className="space-y-16">
-          <div className="flex items-end justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div className="flex items-center gap-4">
               <h2 className="text-4xl font-light">Featured Projects</h2>
               {isAdmin && (
@@ -74,7 +74,6 @@ export const ProjectsSection = React.forwardRef<
           <div className="grid lg:grid-cols-2 gap-8">
             {getPaginatedProjects().map((project) => (
               <article key={project.id} className="group relative flex flex-col h-full p-8 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-500 hover:shadow-lg">
-                {/* Main Content Area */}
                 <div className="flex-grow">
                   <div className="flex items-center justify-between mb-6">
                     <div className="text-xs text-muted-foreground font-mono">{project.year}</div>
@@ -89,7 +88,6 @@ export const ProjectsSection = React.forwardRef<
                   </div>
                 </div>
 
-                {/* Tags and Admin Buttons Area */}
                 <div className="mt-auto pt-6">
                   <div className="flex flex-wrap gap-2 mb-4">
                     {project.tech.map((tech) => (
@@ -97,7 +95,6 @@ export const ProjectsSection = React.forwardRef<
                     ))}
                   </div>
                   
-                  {/* Admin controls that appear on hover */}
                   {isAdmin && (
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button onClick={() => handleEditClick(project)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit project"><Edit className="w-4 h-4" /></button>
@@ -109,7 +106,6 @@ export const ProjectsSection = React.forwardRef<
             ))}
           </div>
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-4 pt-8">
               <button

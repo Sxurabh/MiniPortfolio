@@ -1,13 +1,13 @@
 "use server";
 
 import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { thoughtSchema, updateThoughtSchema } from "@/lib/schemas";
 
-const prisma = new PrismaClient();
+
 
 async function checkAdminAuth() {
   const session = await getServerSession(authOptions);

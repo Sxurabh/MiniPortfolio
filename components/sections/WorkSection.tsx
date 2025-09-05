@@ -50,7 +50,7 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
 
         <section id="work" ref={ref} className="min-h-screen py-32 opacity-0">
           <div className="space-y-16">
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
               <div className="flex items-center gap-4">
                 <h2 className="text-4xl font-light">Selected Work</h2>
                 {isAdmin && (
@@ -95,7 +95,6 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
               ))}
             </div>
 
-            {/* Pagination Controls */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-4 pt-8">
                 <button

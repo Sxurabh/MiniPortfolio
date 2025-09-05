@@ -54,7 +54,7 @@ export const ThoughtsSection = React.forwardRef<
 
       <section id="thoughts" ref={ref} className="min-h-screen py-32 opacity-0">
         <div className="space-y-16">
-          <div className="flex items-end justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div className="flex items-center gap-4">
               <h2 className="text-4xl font-light">Recent Thoughts</h2>
               {isAdmin && (
