@@ -10,14 +10,14 @@ import "./globals.css"
 
 const inter = Inter({
   subsets: ["latin"],
-  display: "swap",
+  display: "swap", // This ensures text is visible while the font loads
   variable: "--font-inter",
 })
 
 const kalam = Kalam({
   subsets: ["latin"],
   weight: ["300", "400", "700"],
-  display: "swap",
+  display: "swap", // This ensures text is visible while the font loads
   variable: "--font-kalam",
 })
 

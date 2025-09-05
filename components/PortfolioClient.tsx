@@ -1,16 +1,20 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
+import dynamic from "next/dynamic"
 import { Nav } from "@/components/Nav"
 import { IntroSection } from "@/components/sections/IntroSection"
-import { WorkSection } from "@/components/sections/WorkSection"
-import { ProjectsSection } from "@/components/sections/ProjectsSection"
-import { CertificationsSection } from "@/components/sections/CertificationsSection"
-import { ThoughtsSection } from "@/components/sections/ThoughtsSection"
-import { ConnectSection } from "@/components/sections/ConnectSection"
-import { Footer } from "@/components/Footer"
 import type { Session } from "next-auth"
 import type { Project, Certification, Thought, WorkExperience, SocialLink } from '@/lib/types'
+
+// Dynamically import sections that are below the fold
+const WorkSection = dynamic(() => import('@/components/sections/WorkSection').then(mod => mod.WorkSection));
+const ProjectsSection = dynamic(() => import('@/components/sections/ProjectsSection').then(mod => mod.ProjectsSection));
+const CertificationsSection = dynamic(() => import('@/components/sections/CertificationsSection').then(mod => mod.CertificationsSection));
+const ThoughtsSection = dynamic(() => import('@/components/sections/ThoughtsSection').then(mod => mod.ThoughtsSection));
+const ConnectSection = dynamic(() => import('@/components/sections/ConnectSection').then(mod => mod.ConnectSection));
+const Footer = dynamic(() => import('@/components/Footer').then(mod => mod.Footer));
+
 
 interface PortfolioClientProps {
     session: Session | null;

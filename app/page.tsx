@@ -16,20 +16,14 @@ const socialLinks: SocialLink[] = [
 ];
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-
-  const allProjects = await prisma.project.findMany({
-    orderBy: { year: 'desc' }
-  });
-  const allCertifications = await prisma.certification.findMany({
-    orderBy: { year: 'desc' }
-  });
-  const allThoughts = await prisma.thought.findMany({
-    orderBy: { createdAt: 'desc' }
-  });
-  const workExperience = await prisma.workExperience.findMany({
-    orderBy: { year: 'desc' }
-  });
+  // Fetch all data in parallel for faster server response
+  const [session, allProjects, allCertifications, allThoughts, workExperience] = await Promise.all([
+    getServerSession(authOptions),
+    prisma.project.findMany({ orderBy: { year: 'desc' } }),
+    prisma.certification.findMany({ orderBy: { year: 'desc' } }),
+    prisma.thought.findMany({ orderBy: { createdAt: 'desc' } }),
+    prisma.workExperience.findMany({ orderBy: { year: 'desc' } })
+  ]);
 
   const cvFilePath = path.join(process.cwd(), "public", "cv-saurabh-kirve.pdf");
   let cvExists = false;
