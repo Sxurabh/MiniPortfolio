@@ -4,6 +4,7 @@ import React, { useState, useTransition, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { uploadCv, deleteCv } from "@/actions/cv";
+import { CheckCircle } from "lucide-react";
 
 interface IntroSectionProps {
   cvExists: boolean
@@ -14,17 +15,17 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   
-  // When mounted on client, now we can show the UI
   useEffect(() => setMounted(true), []);
 
   const isDark = theme === 'dark';
 
   const [cvExists, setCvExists] = useState(initialCvExists);
-  
-  // --- FIX: Use two separate transitions for two separate actions ---
   const [isUploadPending, startUploadTransition] = useTransition();
   const [isDeletePending, startDeleteTransition] = useTransition();
   
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
@@ -51,33 +52,39 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
     if (file) {
       const formData = new FormData();
       formData.append("cv", file);
-      // Use the upload transition
+      
+      // --- FIX: Optimistic UI update for Upload ---
+      setCvExists(true); // Assume success and show the CV download button immediately
+      
       startUploadTransition(async () => {
         const result = await uploadCv(formData);
         if (result.success) {
-          setCvExists(true);
+          setUploadSuccess(true);
+          setTimeout(() => setUploadSuccess(false), 2500);
         } else {
           console.error(result.error);
+          setCvExists(false); // If it failed, revert the UI state
         }
       });
     }
   };
 
   const handleDeleteCv = () => {
-    // Use the delete transition
+    setCvExists(false); // Immediately remove the CV download button from the UI
     startDeleteTransition(async () => {
       const result = await deleteCv();
       if (result.success) {
-        setCvExists(false);
+        setDeleteSuccess(true);
+        setTimeout(() => setDeleteSuccess(false), 2500);
       } else {
         console.error(result.error);
+        setCvExists(true); // If the delete failed on the server, bring the button back
       }
     });
   };
 
   const renderThemeToggle = () => {
     if (!mounted) {
-      // Render a placeholder to prevent layout shift
       return <div className="px-3 py-1.5 w-[88px] h-[30px] rounded-md border border-border" />;
     }
     
@@ -145,14 +152,34 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
               {isAdmin && (
                 <>
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".pdf" />
-                  {/* FIX: Use the specific upload pending state */}
-                  <button onClick={handleUploadClick} disabled={isUploadPending || isDeletePending} className="px-3 py-1.5 text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors">
-                    {isUploadPending ? 'Uploading...' : 'Upload CV'}
+                  
+                  <button 
+                    onClick={handleUploadClick} 
+                    disabled={isUploadPending || isDeletePending || uploadSuccess} 
+                    className={`px-3 py-1.5 text-xs rounded-md border transition-all duration-300 flex items-center gap-1.5 ${
+                      uploadSuccess 
+                        ? 'border-green-500 text-green-500' 
+                        : 'border-border hover:border-muted-foreground/50'
+                    }`}
+                  >
+                    {isUploadPending ? 'Uploading...' : 
+                      uploadSuccess ? (<> <CheckCircle className="w-3.5 h-3.5" /> Uploaded! </>) : 'Upload CV'
+                    }
                   </button>
+                  
                   {cvExists && (
-                    /* FIX: Use the specific delete pending state */
-                    <button onClick={handleDeleteCv} disabled={isUploadPending || isDeletePending} className="px-3 py-1.5 text-xs rounded-md border border-destructive/50 text-destructive hover:border-destructive transition-colors">
-                      {isDeletePending ? 'Deleting...' : 'Delete CV'}
+                    <button 
+                      onClick={handleDeleteCv} 
+                      disabled={isUploadPending || isDeletePending || deleteSuccess} 
+                      className={`px-3 py-1.5 text-xs rounded-md border transition-all duration-300 flex items-center gap-1.5 ${
+                        deleteSuccess 
+                          ? 'border-green-500 text-green-500' 
+                          : 'border-destructive/50 text-destructive hover:border-destructive'
+                      }`}
+                    >
+                      {isDeletePending ? 'Deleting...' : 
+                        deleteSuccess ? (<> <CheckCircle className="w-3.5 h-3.5" /> Deleted! </>) : 'Delete CV'
+                      }
                     </button>
                   )}
                 </>
