@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Certification } from "@/lib/types";
 import { AddCertificationModal } from "@/components/modals/AddCertificationModal";
@@ -14,6 +15,9 @@ interface CertificationsSectionProps {
 
 export const CertificationsSection = React.forwardRef<HTMLElement, CertificationsSectionProps>(
   ({ allCertifications }, ref) => {
+    const { data: session } = useSession();
+    const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -53,10 +57,12 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
               <ExternalLink className="w-3 h-3 transition-colors duration-300" />
             </a>
           </div>
-          <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button onClick={() => handleEditClick(cert)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit certification"><Edit className="w-4 h-4" /></button>
-            <button onClick={() => handleDeleteClick(cert)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete certification"><Trash2 className="w-4 h-4" /></button>
-          </div>
+          {isAdmin && (
+            <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button onClick={() => handleEditClick(cert)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit certification"><Edit className="w-4 h-4" /></button>
+              <button onClick={() => handleDeleteClick(cert)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete certification"><Trash2 className="w-4 h-4" /></button>
+            </div>
+          )}
         </div>
       </div>
     );

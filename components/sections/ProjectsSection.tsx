@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 import { Github, ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Project } from "@/lib/types";
 import { AddProjectModal } from "@/components/modals/AddProjectModal";
@@ -14,6 +15,9 @@ interface ProjectsSectionProps {
 
 export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProps>(
   ({ allProjects }, ref) => {
+    const { data: session } = useSession();
+    const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -50,10 +54,12 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
               <span key={tech} className="inline-flex items-center px-3 py-1 text-xs leading-none whitespace-nowrap border border-border/70 rounded-full text-muted-foreground">{tech}</span>
             ))}
           </div>
-          <div className="absolute bottom-4 right-4 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <button onClick={() => handleEditClick(project)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit project"><Edit className="w-4 h-4" /></button>
-              <button onClick={() => handleDeleteClick(project)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete project"><Trash2 className="w-4 h-4" /></button>
-          </div>
+          {isAdmin && (
+            <div className="absolute bottom-4 right-4 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button onClick={() => handleEditClick(project)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit project"><Edit className="w-4 h-4" /></button>
+                <button onClick={() => handleDeleteClick(project)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete project"><Trash2 className="w-4 h-4" /></button>
+            </div>
+          )}
         </div>
       </article>
     );

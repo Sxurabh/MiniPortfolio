@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Thought } from "@/lib/types";
 import { AddThoughtModal } from "@/components/modals/AddThoughtModal";
@@ -15,6 +16,9 @@ interface ThoughtsSectionProps {
 
 export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProps>(
   ({ allThoughts }, ref) => {
+    const { data: session } = useSession();
+    const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -45,10 +49,12 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
             <span>Read more</span>
             <ExternalLink className="w-4 h-4" />
           </Link>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button onClick={() => handleEditClick(post)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit thought"><Edit className="w-4 h-4" /></button>
-            <button onClick={() => handleDeleteClick(post)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete thought"><Trash2 className="w-4 h-4" /></button>
-          </div>
+          {isAdmin && (
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button onClick={() => handleEditClick(post)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit thought"><Edit className="w-4 h-4" /></button>
+              <button onClick={() => handleDeleteClick(post)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete thought"><Trash2 className="w-4 h-4" /></button>
+            </div>
+          )}
         </div>
       </article>
     );

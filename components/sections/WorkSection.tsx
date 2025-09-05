@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 import type { WorkExperience } from "@/lib/types";
 import { AddWorkModal } from "@/components/modals/AddWorkModal";
 import { EditWorkModal } from "@/components/modals/EditWorkModal";
@@ -14,6 +15,9 @@ interface WorkSectionProps {
 
 export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
   ({ workExperience }, ref) => {
+    const { data: session } = useSession();
+    const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -48,10 +52,12 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
                     </span>
                 ))}
             </div>
-            <div className="absolute bottom-4 right-0 flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button onClick={() => handleEditClick(job)} className="p-2 text-muted-foreground hover:text-foreground transition-colors"><Edit className="w-4 h-4" /></button>
-                <button onClick={() => handleDeleteClick(job)} className="p-2 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
-            </div>
+            {isAdmin && (
+              <div className="absolute bottom-4 right-0 flex justify-end items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button onClick={() => handleEditClick(job)} className="p-2 text-muted-foreground hover:text-foreground transition-colors"><Edit className="w-4 h-4" /></button>
+                  <button onClick={() => handleDeleteClick(job)} className="p-2 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-4 h-4" /></button>
+              </div>
+            )}
         </div>
     );
 
