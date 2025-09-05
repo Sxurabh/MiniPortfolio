@@ -1,18 +1,18 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useRef, useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import { Nav } from "@/components/Nav"
-import { IntroSection } from "@/components/sections/IntroSection"
+import { IntroSection } from "@/components/features/Intro/IntroSection" // Assuming you also moved IntroSection
 import type { Session } from "next-auth"
 import type { Project, Certification, Thought, WorkExperience, SocialLink } from '@/lib/types'
 
-// Dynamically import sections that are below the fold
-const WorkSection = dynamic(() => import('@/components/sections/WorkSection').then(mod => mod.WorkSection));
-const ProjectsSection = dynamic(() => import('@/components/sections/ProjectsSection').then(mod => mod.ProjectsSection));
-const CertificationsSection = dynamic(() => import('@/components/sections/CertificationsSection').then(mod => mod.CertificationsSection));
-const ThoughtsSection = dynamic(() => import('@/components/sections/ThoughtsSection').then(mod => mod.ThoughtsSection));
-const ConnectSection = dynamic(() => import('@/components/sections/ConnectSection').then(mod => mod.ConnectSection));
+// Dynamically import sections from their 'features' directory
+const WorkSection = dynamic(() => import('@/components/features/Work/WorkSection').then(mod => mod.WorkSection));
+const ProjectsSection = dynamic(() => import('@/components/features/Projects/ProjectsSection').then(mod => mod.ProjectsSection));
+const CertificationsSection = dynamic(() => import('@/components/features/Certifications/CertificationsSection').then(mod => mod.CertificationsSection));
+const ThoughtsSection = dynamic(() => import('@/components/features/Thoughts/ThoughtsSection').then(mod => mod.ThoughtsSection));
+const ConnectSection = dynamic(() => import('@/components/features/Connect/ConnectSection').then(mod => mod.ConnectSection)); // It's good practice to move all sections
 const Footer = dynamic(() => import('@/components/Footer').then(mod => mod.Footer));
 
 

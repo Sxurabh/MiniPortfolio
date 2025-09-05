@@ -7,8 +7,8 @@ import { thoughtSchema, updateThoughtSchema, type ThoughtFormValues, type Update
 import { addThought, updateThought } from "@/actions/thought";
 import type { Thought } from "@/lib/types";
 import { toast } from "sonner";
-import { CrudModal } from "./CrudModal";
-import { FormButtons } from "./FormButtons";
+import { CrudModal } from "@/components/common/CrudModal";
+import { FormButtons } from "@/components/common/FormButtons";
 
 interface ThoughtFormModalProps {
   isOpen: boolean;

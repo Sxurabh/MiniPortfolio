@@ -4,10 +4,10 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Github, ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Project } from "@/lib/types";
-import { ProjectFormModal } from "@/components/modals/ProjectFormModal"; // Import the new combined modal
-import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal";
+import { ProjectFormModal } from "./ProjectFormModal"; // Import the new combined modal
+import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteProject } from "@/actions/project";
-import { GenericCrudSection } from "./GenericCrudSection";
+import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
 
 interface ProjectsSectionProps {
   allProjects: Project[];

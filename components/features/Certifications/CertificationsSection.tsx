@@ -4,10 +4,10 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Certification } from "@/lib/types";
-import { CertificationFormModal } from "@/components/modals/CertificationFormModal"; // Import the new modal
-import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal";
+import { CertificationFormModal } from "@/components/features/Certifications/CertificationFormModal"; // Import the new modal
+import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteCertification } from "@/actions/certification";
-import { GenericCrudSection } from "./GenericCrudSection";
+import { GenericCrudSection } from "../../sections/GenericCrudSection";
 
 interface CertificationsSectionProps {
   allCertifications: Certification[];

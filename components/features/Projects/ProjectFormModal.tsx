@@ -7,9 +7,8 @@ import { projectSchema, updateProjectSchema, type ProjectFormValues, type Update
 import { addProject, updateProject } from "@/actions/project";
 import type { Project } from "@/lib/types";
 import { toast } from "sonner";
-import { CrudModal } from "./CrudModal";
-import { FormButtons } from "./FormButtons";
-
+import { CrudModal } from "@/components/common/CrudModal";
+import { FormButtons } from "@/components/common/FormButtons";
 interface ProjectFormModalProps {
   isOpen: boolean;
   onClose: () => void;

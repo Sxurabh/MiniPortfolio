@@ -7,8 +7,8 @@ import { certificationSchema, updateCertificationSchema, type CertificationFormV
 import { addCertification, updateCertification } from "@/actions/certification";
 import type { Certification } from "@/lib/types";
 import { toast } from "sonner";
-import { CrudModal } from "./CrudModal";
-import { FormButtons } from "./FormButtons";
+import { CrudModal } from "@/components/common/CrudModal";
+import { FormButtons } from "@/components/common/FormButtons";
 
 interface CertificationFormModalProps {
   isOpen: boolean;

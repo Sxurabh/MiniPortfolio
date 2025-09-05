@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Thought } from "@/lib/types";
-import { ThoughtFormModal } from "@/components/modals/ThoughtFormModal"; // Import the new modal
-import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal";
+import { ThoughtFormModal } from "./ThoughtFormModal"; // Import the new modal
+import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteThought } from "@/actions/thought";
-import { GenericCrudSection } from "./GenericCrudSection";
+import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
 
 interface ThoughtsSectionProps {
   allThoughts: Thought[];

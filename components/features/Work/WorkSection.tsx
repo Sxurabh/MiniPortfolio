@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import type { WorkExperience } from "@/lib/types";
-import { WorkFormModal } from "@/components/modals/WorkFormModal"; // Import the new modal
-import { DeleteConfirmationModal } from "@/components/modals/DeleteConfirmationModal";
+import { WorkFormModal } from "./WorkFormModal"; // Import the new modal
+import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteWorkExperience } from "@/actions/work";
 import { Edit, Trash2 } from "lucide-react";
-import { GenericCrudSection } from "./GenericCrudSection";
+import { GenericCrudSection } from "../../sections/GenericCrudSection";
 
 interface WorkSectionProps {
   workExperience: WorkExperience[];

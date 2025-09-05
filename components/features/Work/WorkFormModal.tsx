@@ -7,8 +7,8 @@ import { workExperienceSchema, updateWorkExperienceSchema, type WorkExperienceFo
 import { addWorkExperience, updateWorkExperience } from "@/actions/work";
 import type { WorkExperience } from "@/lib/types";
 import { toast } from "sonner";
-import { CrudModal } from "./CrudModal";
-import { FormButtons } from "./FormButtons";
+import { CrudModal } from "@/components/common/CrudModal";
+import { FormButtons } from "@/components/common/FormButtons";
 
 interface WorkFormModalProps {
   isOpen: boolean;
