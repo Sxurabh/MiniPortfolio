@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useTransition, useEffect } from "react"
+import React, { useState, useTransition, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { uploadCv, deleteCv } from "@/actions/cv";
@@ -20,8 +20,12 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
   const isDark = theme === 'dark';
 
   const [cvExists, setCvExists] = useState(initialCvExists);
-  const [isPending, startTransition] = useTransition();
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  // --- FIX: Use two separate transitions for two separate actions ---
+  const [isUploadPending, startUploadTransition] = useTransition();
+  const [isDeletePending, startDeleteTransition] = useTransition();
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
@@ -47,7 +51,8 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
     if (file) {
       const formData = new FormData();
       formData.append("cv", file);
-      startTransition(async () => {
+      // Use the upload transition
+      startUploadTransition(async () => {
         const result = await uploadCv(formData);
         if (result.success) {
           setCvExists(true);
@@ -59,7 +64,8 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
   };
 
   const handleDeleteCv = () => {
-    startTransition(async () => {
+    // Use the delete transition
+    startDeleteTransition(async () => {
       const result = await deleteCv();
       if (result.success) {
         setCvExists(false);
@@ -139,12 +145,14 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
               {isAdmin && (
                 <>
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".pdf" />
-                  <button onClick={handleUploadClick} disabled={isPending} className="px-3 py-1.5 text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors">
-                    {isPending ? 'Uploading...' : 'Upload CV'}
+                  {/* FIX: Use the specific upload pending state */}
+                  <button onClick={handleUploadClick} disabled={isUploadPending || isDeletePending} className="px-3 py-1.5 text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors">
+                    {isUploadPending ? 'Uploading...' : 'Upload CV'}
                   </button>
                   {cvExists && (
-                    <button onClick={handleDeleteCv} disabled={isPending} className="px-3 py-1.5 text-xs rounded-md border border-destructive/50 text-destructive hover:border-destructive transition-colors">
-                      {isPending ? 'Deleting...' : 'Delete CV'}
+                    /* FIX: Use the specific delete pending state */
+                    <button onClick={handleDeleteCv} disabled={isUploadPending || isDeletePending} className="px-3 py-1.5 text-xs rounded-md border border-destructive/50 text-destructive hover:border-destructive transition-colors">
+                      {isDeletePending ? 'Deleting...' : 'Delete CV'}
                     </button>
                   )}
                 </>
