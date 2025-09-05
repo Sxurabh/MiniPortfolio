@@ -111,7 +111,7 @@ export const ProjectsSection = React.forwardRef<
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-4 pt-8">
               <button
                 onClick={() => setProjectsPage(Math.max(1, projectsPage - 1))}
                 disabled={projectsPage === 1}
@@ -148,4 +148,3 @@ export const ProjectsSection = React.forwardRef<
 });
 
 ProjectsSection.displayName = "ProjectsSection";
-

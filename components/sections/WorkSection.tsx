@@ -8,6 +8,8 @@ import { EditWorkModal } from "@/components/modals/EditWorkModal";
 import { DeleteWorkModal } from "@/components/modals/DeleteWorkModal";
 import { Edit, Trash2 } from "lucide-react";
 
+const WORK_EXPERIENCE_PER_PAGE = 3;
+
 interface WorkSectionProps {
   workExperience: WorkExperience[];
 }
@@ -15,6 +17,7 @@ interface WorkSectionProps {
 export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
   ({ workExperience }, ref) => {
     const { data: session } = useSession();
+    const [workPage, setWorkPage] = useState(1);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -31,6 +34,13 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
       setSelectedWork(job);
       setIsDeleteModalOpen(true);
     };
+
+    const getPaginatedWork = () => {
+      const startIndex = (workPage - 1) * WORK_EXPERIENCE_PER_PAGE;
+      return workExperience.slice(startIndex, startIndex + WORK_EXPERIENCE_PER_PAGE);
+    };
+
+    const totalPages = Math.ceil(workExperience.length / WORK_EXPERIENCE_PER_PAGE);
     
     return (
       <>
@@ -49,11 +59,14 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
                   </button>
                 )}
               </div>
-              <div className="text-sm text-muted-foreground font-mono">2022 — 2025</div>
+              <div className="text-sm text-muted-foreground font-mono">
+                {(workPage - 1) * WORK_EXPERIENCE_PER_PAGE + 1}-
+                {Math.min(workPage * WORK_EXPERIENCE_PER_PAGE, workExperience.length)} of {workExperience.length}
+              </div>
             </div>
 
             <div className="space-y-12">
-              {workExperience.map((job) => (
+              {getPaginatedWork().map((job) => (
                 <div key={job.id} className="group grid lg:grid-cols-12 gap-8 py-8 border-b border-border/50 hover:border-border transition-colors duration-500">
                   <div className="lg:col-span-2">
                     <div className="font-light text-muted-foreground group-hover:text-foreground transition-colors duration-500 text-base">{job.year}</div>
@@ -81,6 +94,39 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
                 </div>
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4 pt-8">
+                <button
+                  onClick={() => setWorkPage(Math.max(1, workPage - 1))}
+                  disabled={workPage === 1}
+                  className="p-2 rounded-lg border border-border hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Previous page"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setWorkPage(page)}
+                      className={`w-8 h-8 rounded-lg border transition-all duration-300 text-sm ${page === workPage ? "border-foreground bg-foreground text-background" : "border-border hover:border-muted-foreground/50"}`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setWorkPage(Math.min(totalPages, workPage + 1))}
+                  disabled={workPage === totalPages}
+                  className="p-2 rounded-lg border border-border hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Next page"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                </button>
+              </div>
+            )}
           </div>
         </section>
       </>

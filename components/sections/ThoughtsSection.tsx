@@ -99,8 +99,34 @@ export const ThoughtsSection = React.forwardRef<
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4">
-               {/* Pagination controls */}
+            <div className="flex items-center justify-center gap-4 pt-8">
+              <button
+                onClick={() => setThoughtsPage(Math.max(1, thoughtsPage - 1))}
+                disabled={thoughtsPage === 1}
+                className="p-2 rounded-lg border border-border hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Previous page"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setThoughtsPage(page)}
+                    className={`w-8 h-8 rounded-lg border transition-all duration-300 text-sm ${page === thoughtsPage ? "border-foreground bg-foreground text-background" : "border-border hover:border-muted-foreground/50"}`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setThoughtsPage(Math.min(totalPages, thoughtsPage + 1))}
+                disabled={thoughtsPage === totalPages}
+                className="p-2 rounded-lg border border-border hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Next page"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              </button>
             </div>
           )}
         </div>
