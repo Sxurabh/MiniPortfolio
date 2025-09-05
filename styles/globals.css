@@ -2,6 +2,20 @@
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .input-style {
+    @apply w-full px-3 py-2 bg-transparent border border-border rounded-md text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors;
+  }
+  .form-error {
+    @apply text-xs text-destructive mt-1;
+  }
+}
+
+
 
 :root {
   --background: oklch(1 0 0);

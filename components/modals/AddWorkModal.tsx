@@ -78,29 +78,29 @@ export const AddWorkModal = ({ isOpen, onClose }: AddWorkModalProps) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="year" className="block text-sm font-medium text-muted-foreground mb-1">Year</label>
-              <input id="year" {...register("year")} placeholder="2023 - Present" className="w-full px-3 py-2 bg-transparent border border-border rounded-md text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring" />
-              {errors.year && <p className="text-xs text-red-500 mt-1">{errors.year.message}</p>}
+              <input id="year" {...register("year")} placeholder="2023 - Present" className="w-full input-style" />
+              {errors.year && <p className="form-error">{errors.year.message}</p>}
             </div>
             <div>
               <label htmlFor="role" className="block text-sm font-medium text-muted-foreground mb-1">Role</label>
-              <input id="role" {...register("role")} placeholder="Associate Analyst" className="w-full px-3 py-2 bg-transparent border border-border rounded-md text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring" />
-              {errors.role && <p className="text-xs text-red-500 mt-1">{errors.role.message}</p>}
+              <input id="role" {...register("role")} placeholder="Associate Analyst" className="w-full input-style" />
+              {errors.role && <p className="form-error">{errors.role.message}</p>}
             </div>
           </div>
           <div>
             <label htmlFor="company" className="block text-sm font-medium text-muted-foreground mb-1">Company</label>
-            <input id="company" {...register("company")} placeholder="SG Analytics" className="w-full px-3 py-2 bg-transparent border border-border rounded-md text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring" />
-            {errors.company && <p className="text-xs text-red-500 mt-1">{errors.company.message}</p>}
+            <input id="company" {...register("company")} placeholder="SG Analytics" className="w-full input-style" />
+            {errors.company && <p className="form-error">{errors.company.message}</p>}
           </div>
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-muted-foreground mb-1">Description</label>
-            <textarea id="description" {...register("description")} placeholder="Leveraged Python, Power BI..." rows={4} className="w-full px-3 py-2 bg-transparent border border-border rounded-md text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring" />
-            {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
+            <textarea id="description" {...register("description")} placeholder="Leveraged Python, Power BI..." rows={4} className="w-full input-style"/>
+            {errors.description && <p className="form-error">{errors.description.message}</p>}
           </div>
           <div>
             <label htmlFor="tech" className="block text-sm font-medium text-muted-foreground mb-1">Technologies (comma-separated)</label>
-            <input id="tech" {...register("tech")} placeholder="Python, SQL, Power BI" className="w-full px-3 py-2 bg-transparent border border-border rounded-md text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring" />
-            {errors.tech && <p className="text-xs text-red-500 mt-1">{errors.tech.message}</p>}
+            <input id="tech" {...register("tech")} placeholder="Python, SQL, Power BI" className="w-full input-style" />
+            {errors.tech && <p className="form-error">{errors.tech.message}</p>}
           </div>
           
           {error && <p className="text-sm text-red-500">{error}</p>}
