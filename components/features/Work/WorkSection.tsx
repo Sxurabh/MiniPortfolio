@@ -1,14 +1,18 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import type { WorkExperience } from "@/lib/types";
-import { WorkFormModal } from "./WorkFormModal";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteWorkExperience } from "@/actions/work";
 import { Edit, Trash2 } from "lucide-react";
 import { GenericCrudSection } from "../../sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+
+const WorkFormModal = dynamic(() => 
+  import("./WorkFormModal").then((mod) => mod.WorkFormModal)
+);
 
 interface WorkSectionProps {
   workExperience: WorkExperience[];
@@ -58,11 +62,13 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
 
     const renderModals = () => (
       <>
-        <WorkFormModal
-          isOpen={isFormModalOpen}
-          onClose={closeFormModal}
-          workExperience={selectedItem}
-        />
+        {isFormModalOpen && (
+          <WorkFormModal
+            isOpen={isFormModalOpen}
+            onClose={closeFormModal}
+            workExperience={selectedItem}
+          />
+        )}
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen}
           onClose={closeDeleteModal}
