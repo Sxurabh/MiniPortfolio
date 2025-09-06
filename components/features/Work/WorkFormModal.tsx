@@ -31,22 +31,24 @@ export const WorkFormModal = ({ isOpen, onClose, workExperience }: WorkFormModal
     }
   }, [isOpen, workExperience, isEditMode, form]);
 
-  const onSubmit = (values: WorkExperienceFormValues | UpdateWorkExperienceFormValues) => {
-    startTransition(() => {
-      const action = isEditMode
-        ? updateWorkExperience(values as UpdateWorkExperienceFormValues)
-        : addWorkExperience(values as WorkExperienceFormValues);
+  const handleFormSubmit = async (values: WorkExperienceFormValues | UpdateWorkExperienceFormValues) => {
+    const action = isEditMode
+      ? updateWorkExperience(values as UpdateWorkExperienceFormValues)
+      : addWorkExperience(values as WorkExperienceFormValues);
 
-      action.then((data) => {
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          toast.success(data.success);
-          onClose();
-        }
-      });
-    });
+    const result = await action;
+
+    if (result.error) {
+      toast.error(result.error);
+    }
+    if (result.success) {
+      toast.success(result.success);
+      onClose();
+    }
+  };
+
+  const onSubmit = (values: WorkExperienceFormValues | UpdateWorkExperienceFormValues) => {
+    startTransition(() => handleFormSubmit(values));
   };
 
   return (

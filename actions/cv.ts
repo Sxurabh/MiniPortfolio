@@ -1,3 +1,5 @@
+// @/actions/cv.ts
+
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -21,6 +23,12 @@ export async function uploadCv(formData: FormData) {
     const file = formData.get("cv") as File;
     if (!file) {
       return { error: "No file provided." };
+    }
+
+    // --- SECURITY FIX: SERVER-SIDE FILE TYPE VALIDATION ---
+    // Check if the file is a PDF
+    if (file.type !== "application/pdf") {
+      return { error: "Invalid file type. Only PDFs are allowed." };
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());

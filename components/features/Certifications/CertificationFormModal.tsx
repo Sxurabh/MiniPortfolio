@@ -31,22 +31,24 @@ export const CertificationFormModal = ({ isOpen, onClose, certification }: Certi
     }
   }, [isOpen, certification, isEditMode, form]);
 
-  const onSubmit = (values: CertificationFormValues | UpdateCertificationFormValues) => {
-    startTransition(() => {
-      const action = isEditMode
-        ? updateCertification(values as UpdateCertificationFormValues)
-        : addCertification(values as CertificationFormValues);
+  const handleFormSubmit = async (values: CertificationFormValues | UpdateCertificationFormValues) => {
+    const action = isEditMode
+      ? updateCertification(values as UpdateCertificationFormValues)
+      : addCertification(values as CertificationFormValues);
 
-      action.then((data) => {
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          toast.success(data.success);
-          onClose();
-        }
-      });
-    });
+    const result = await action;
+    
+    if (result.error) {
+      toast.error(result.error);
+    }
+    if (result.success) {
+      toast.success(result.success);
+      onClose();
+    }
+  };
+
+  const onSubmit = (values: CertificationFormValues | UpdateCertificationFormValues) => {
+    startTransition(() => handleFormSubmit(values));
   };
 
   return (

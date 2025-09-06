@@ -1,3 +1,5 @@
+// @/components/features/Projects/ProjectFormModal.tsx
+
 "use client";
 
 import React, { useTransition, useEffect } from "react";
@@ -9,10 +11,11 @@ import type { Project } from "@/lib/types";
 import { toast } from "sonner";
 import { CrudModal } from "@/components/common/CrudModal";
 import { FormButtons } from "@/components/common/FormButtons";
+
 interface ProjectFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  project: Project | null; // If null, it's in "Add" mode
+  project: Project | null;
 }
 
 export const ProjectFormModal = ({ isOpen, onClose, project }: ProjectFormModalProps) => {
@@ -30,28 +33,28 @@ export const ProjectFormModal = ({ isOpen, onClose, project }: ProjectFormModalP
     }
   }, [isOpen, project, isEditMode, form]);
 
-  const onSubmit = (values: ProjectFormValues | UpdateProjectFormValues) => {
-    startTransition(() => {
-      const action = isEditMode
-        ? updateProject(values as UpdateProjectFormValues)
-        : addProject(values as ProjectFormValues);
+  const handleFormSubmit = async (values: ProjectFormValues | UpdateProjectFormValues) => {
+    const action = isEditMode
+      ? updateProject(values as UpdateProjectFormValues)
+      : addProject(values as ProjectFormValues);
 
-      action.then((data) => {
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          toast.success(data.success);
-          onClose();
-        }
-      });
-    });
+    const result = await action;
+
+    if (result.error) {
+      toast.error(result.error);
+    } else if (result.success) {
+      toast.success(result.success);
+      onClose();
+    }
+  };
+
+  const onSubmit = (values: ProjectFormValues | UpdateProjectFormValues) => {
+    startTransition(() => handleFormSubmit(values));
   };
 
   return (
     <CrudModal isOpen={isOpen} onClose={onClose} title={isEditMode ? "Edit Project" : "Add New Project"}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {/* The form fields remain identical */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-muted-foreground mb-1">Title</label>

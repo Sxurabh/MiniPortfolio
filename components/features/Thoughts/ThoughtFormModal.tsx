@@ -31,22 +31,24 @@ export const ThoughtFormModal = ({ isOpen, onClose, thought }: ThoughtFormModalP
     }
   }, [isOpen, thought, isEditMode, form]);
 
-  const onSubmit = (values: ThoughtFormValues | UpdateThoughtFormValues) => {
-    startTransition(() => {
-      const action = isEditMode
-        ? updateThought(values as UpdateThoughtFormValues)
-        : addThought(values as ThoughtFormValues);
+  const handleFormSubmit = async (values: ThoughtFormValues | UpdateThoughtFormValues) => {
+    const action = isEditMode
+      ? updateThought(values as UpdateThoughtFormValues)
+      : addThought(values as ThoughtFormValues);
 
-      action.then((data) => {
-        if (data.error) {
-          toast.error(data.error);
-        }
-        if (data.success) {
-          toast.success(data.success);
-          onClose();
-        }
-      });
-    });
+    const result = await action;
+    
+    if (result.error) {
+      toast.error(result.error);
+    }
+    if (result.success) {
+      toast.success(result.success);
+      onClose();
+    }
+  };
+
+  const onSubmit = (values: ThoughtFormValues | UpdateThoughtFormValues) => {
+    startTransition(() => handleFormSubmit(values));
   };
 
   return (
