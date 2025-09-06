@@ -3,7 +3,7 @@
 
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { env } from "@/lib/env"; // Import the validated env variables
+import { env } from "@/lib/env.server"; // Import from the new server-only env file
 
 export async function checkAdminAuth() {
   const session = await getServerSession(authOptions);

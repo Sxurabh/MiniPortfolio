@@ -4,7 +4,7 @@ import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
-import { env } from "@/lib/env"; // Import the validated env variables
+import { env } from "@/lib/env.server"; // Import from the new server-only env file
 
 const prisma = new PrismaClient();
 
