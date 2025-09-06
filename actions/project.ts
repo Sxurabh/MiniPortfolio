@@ -3,8 +3,7 @@
 
 import prisma from "@/lib/prisma";
 import { projectSchema, updateProjectSchema } from "@/lib/schemas";
-import { createCrudActions } from "../lib/crudFactory";
-
+import { createCrudActions } from "@/lib/crudFactory";
 const projectActions = createCrudActions(
   prisma.project,
   "Project",

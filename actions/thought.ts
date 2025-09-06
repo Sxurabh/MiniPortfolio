@@ -3,8 +3,7 @@
 
 import prisma from "@/lib/prisma";
 import { thoughtSchema, updateThoughtSchema } from "@/lib/schemas";
-import { createCrudActions } from "../lib/crudFactory";
-
+import { createCrudActions } from "@/lib/crudFactory";
 const thoughtActions = createCrudActions(
   prisma.thought,
   "Thought",

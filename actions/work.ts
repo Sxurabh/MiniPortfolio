@@ -3,7 +3,7 @@
 
 import prisma from "@/lib/prisma";
 import { workExperienceSchema, updateWorkExperienceSchema } from "@/lib/schemas";
-import { createCrudActions } from "../lib/crudFactory";
+import { createCrudActions } from "@/lib/crudFactory";
 
 const workActions = createCrudActions(
   prisma.workExperience,
