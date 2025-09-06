@@ -3,18 +3,8 @@
 import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { workExperienceSchema, updateWorkExperienceSchema } from "@/lib/schemas";
-
-// Helper function to check admin authentication
-async function checkAdminAuth() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    throw new Error("Not authorized");
-  }
-  return session;
-}
+import { checkAdminAuth } from "@/lib/auth-utils";
 
 export async function addWorkExperience(values: z.infer<typeof workExperienceSchema>) {
   try {

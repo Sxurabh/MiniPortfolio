@@ -1,21 +1,9 @@
-// @/actions/cv.ts
-
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import fs from "fs/promises";
 import path from "path";
-
-// Helper function to check admin authentication
-async function checkAdminAuth() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    throw new Error("Not authorized");
-  }
-  return session;
-}
+import { checkAdminAuth } from "@/lib/auth-utils";
 
 export async function uploadCv(formData: FormData) {
   try {
@@ -25,8 +13,6 @@ export async function uploadCv(formData: FormData) {
       return { error: "No file provided." };
     }
 
-    // --- SECURITY FIX: SERVER-SIDE FILE TYPE VALIDATION ---
-    // Check if the file is a PDF
     if (file.type !== "application/pdf") {
       return { error: "Invalid file type. Only PDFs are allowed." };
     }

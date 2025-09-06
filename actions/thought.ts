@@ -3,16 +3,8 @@
 import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { thoughtSchema, updateThoughtSchema } from "@/lib/schemas";
-
-async function checkAdminAuth() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    throw new Error("Not authorized");
-  }
-}
+import { checkAdminAuth } from "@/lib/auth-utils";
 
 export async function addThought(values: z.infer<typeof thoughtSchema>) {
   try {
