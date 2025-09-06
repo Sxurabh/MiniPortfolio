@@ -1,12 +1,10 @@
+// lib/auth.ts
 import type { AuthOptions } from "next-auth";
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
-
-if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET || !process.env.AUTH_SECRET) {
-  throw new Error("Missing required environment variables for authentication.");
-}
+import { env } from "@/lib/env"; // Import the validated env variables
 
 const prisma = new PrismaClient();
 
@@ -15,11 +13,11 @@ export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GitHub({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: env.GITHUB_ID,
+      clientSecret: env.GITHUB_SECRET,
     }),
   ],
-  secret: process.env.AUTH_SECRET,
+  secret: env.AUTH_SECRET,
 };
 
 // This part is now separate and used by the API route

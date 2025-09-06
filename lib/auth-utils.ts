@@ -3,10 +3,11 @@
 
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { env } from "@/lib/env"; // Import the validated env variables
 
 export async function checkAdminAuth() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+  if (!session?.user?.email || session.user.email !== env.NEXT_PUBLIC_ADMIN_EMAIL) {
     throw new Error("Not authorized");
   }
   return session;
