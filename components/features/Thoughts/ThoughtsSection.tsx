@@ -1,14 +1,16 @@
+// @/components/features/Thoughts/ThoughtsSection.tsx
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Thought } from "@/lib/types";
-import { ThoughtFormModal } from "./ThoughtFormModal"; // Import the new modal
+import { ThoughtFormModal } from "./ThoughtFormModal";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteThought } from "@/actions/thought";
 import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
+import { useCrudState } from "@/hooks/use-crud-state";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 interface ThoughtsSectionProps {
   allThoughts: Thought[];
@@ -16,27 +18,17 @@ interface ThoughtsSectionProps {
 
 export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProps>(
   ({ allThoughts }, ref) => {
-    const { data: session } = useSession();
-    const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-
-    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedThought, setSelectedThought] = useState<Thought | null>(null);
-
-    const handleAddClick = () => {
-      setSelectedThought(null);
-      setIsFormModalOpen(true);
-    };
-
-    const handleEditClick = (thought: Thought) => {
-      setSelectedThought(thought);
-      setIsFormModalOpen(true);
-    };
-
-    const handleDeleteClick = (thought: Thought) => {
-      setSelectedThought(thought);
-      setIsDeleteModalOpen(true);
-    };
+    const isAdmin = useIsAdmin();
+    const {
+      isFormModalOpen,
+      isDeleteModalOpen,
+      selectedItem,
+      handleAddItem,
+      handleEditItem,
+      handleDeleteItem,
+      closeFormModal,
+      closeDeleteModal,
+    } = useCrudState<Thought>();
 
     const renderItem = (post: Thought) => (
       <article key={post.id} className="group p-8 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-500 hover:shadow-lg flex flex-col justify-between">
@@ -55,8 +47,8 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
           </Link>
           {isAdmin && (
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <button onClick={() => handleEditClick(post)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit thought"><Edit className="w-4 h-4" /></button>
-              <button onClick={() => handleDeleteClick(post)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete thought"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={() => handleEditItem(post)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit thought"><Edit className="w-4 h-4" /></button>
+              <button onClick={() => handleDeleteItem(post)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete thought"><Trash2 className="w-4 h-4" /></button>
             </div>
           )}
         </div>
@@ -67,15 +59,15 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
       <>
         <ThoughtFormModal 
           isOpen={isFormModalOpen} 
-          onClose={() => setIsFormModalOpen(false)} 
-          thought={selectedThought} 
+          onClose={closeFormModal} 
+          thought={selectedItem} 
         />
         <DeleteConfirmationModal 
           isOpen={isDeleteModalOpen} 
-          onClose={() => setIsDeleteModalOpen(false)} 
+          onClose={closeDeleteModal} 
           onConfirm={async () => {
-            if (!selectedThought) return;
-            return deleteThought(selectedThought.id);
+            if (!selectedItem) return;
+            return deleteThought(selectedItem.id);
           }}
           itemName="thought"
         />
@@ -90,7 +82,7 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
         items={allThoughts}
         renderItem={renderItem}
         renderModals={renderModals}
-        onAddItem={handleAddClick}
+        onAddItem={handleAddItem}
         itemsPerPage={4}
         gridClass="grid lg:grid-cols-2 gap-8"
       />

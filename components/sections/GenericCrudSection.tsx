@@ -1,7 +1,8 @@
+// @/components/sections/GenericCrudSection.tsx
 "use client";
 
 import React, { useState, ReactNode } from "react";
-import { useSession } from "next-auth/react";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 interface GenericCrudSectionProps<T extends { id: any }> {
   id: string;
@@ -18,10 +19,8 @@ export const GenericCrudSection = React.forwardRef<
   HTMLElement,
   GenericCrudSectionProps<any>
 >(({ id, title, items, renderItem, renderModals, onAddItem, itemsPerPage, gridClass = "space-y-12" }, ref) => {
-  const { data: session } = useSession();
+  const isAdmin = useIsAdmin();
   const [currentPage, setCurrentPage] = useState(1);
-
-  const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
 

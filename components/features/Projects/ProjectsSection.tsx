@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
-import { useSession } from "next-auth/react";
+import React from "react";
 import { Github, ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Project } from "@/lib/types";
-import { ProjectFormModal } from "./ProjectFormModal"; // Import the new combined modal
+import { ProjectFormModal } from "./ProjectFormModal";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteProject } from "@/actions/project";
 import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
+import { useCrudState } from "@/hooks/use-crud-state";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 interface ProjectsSectionProps {
   allProjects: Project[];
@@ -15,27 +16,17 @@ interface ProjectsSectionProps {
 
 export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProps>(
   ({ allProjects }, ref) => {
-    const { data: session } = useSession();
-    const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-
-    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-
-    const handleAddClick = () => {
-      setSelectedProject(null); // Set to null for "Add" mode
-      setIsFormModalOpen(true);
-    };
-
-    const handleEditClick = (project: Project) => {
-      setSelectedProject(project); // Set to a project for "Edit" mode
-      setIsFormModalOpen(true);
-    };
-
-    const handleDeleteClick = (project: Project) => {
-      setSelectedProject(project);
-      setIsDeleteModalOpen(true);
-    };
+    const isAdmin = useIsAdmin();
+    const {
+      isFormModalOpen,
+      isDeleteModalOpen,
+      selectedItem,
+      handleAddItem,
+      handleEditItem,
+      handleDeleteItem,
+      closeFormModal,
+      closeDeleteModal,
+    } = useCrudState<Project>();
 
     const renderItem = (project: Project) => (
       <article key={project.id} className="group relative flex flex-col h-full p-8 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-500 hover:shadow-lg">
@@ -60,8 +51,8 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
           </div>
           {isAdmin && (
             <div className="absolute bottom-4 right-4 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button onClick={() => handleEditClick(project)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit project"><Edit className="w-4 h-4" /></button>
-                <button onClick={() => handleDeleteClick(project)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete project"><Trash2 className="w-4 h-4" /></button>
+                <button onClick={() => handleEditItem(project)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Edit project"><Edit className="w-4 h-4" /></button>
+                <button onClick={() => handleDeleteItem(project)} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Delete project"><Trash2 className="w-4 h-4" /></button>
             </div>
           )}
         </div>
@@ -72,15 +63,15 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
       <>
         <ProjectFormModal 
           isOpen={isFormModalOpen} 
-          onClose={() => setIsFormModalOpen(false)} 
-          project={selectedProject} 
+          onClose={closeFormModal} 
+          project={selectedItem} 
         />
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
+          onClose={closeDeleteModal}
           onConfirm={async () => {
-            if (!selectedProject) return;
-            return deleteProject(selectedProject.id);
+            if (!selectedItem) return;
+            return deleteProject(selectedItem.id);
           }}
           itemName="project"
         />
@@ -95,7 +86,7 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
         items={allProjects}
         renderItem={renderItem}
         renderModals={renderModals}
-        onAddItem={handleAddClick} // Use the new handler
+        onAddItem={handleAddItem}
         itemsPerPage={4}
         gridClass="grid lg:grid-cols-2 gap-8"
       />
