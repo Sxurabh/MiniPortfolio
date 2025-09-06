@@ -32,7 +32,7 @@ export const GenericCrudSection = React.forwardRef<
   return (
     <>
       {isAdmin && renderModals()}
-      <section id={id} ref={ref} className="min-h-screen py-32 opacity-0">
+      <section id={id} ref={ref} className="py-32 opacity-0">
         <div className="space-y-16">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div className="flex items-center gap-4">

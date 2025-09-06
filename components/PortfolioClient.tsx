@@ -43,13 +43,16 @@ export default function PortfolioClient({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-in-up")
-            setActiveSection(entry.target.id)
+            entry.target.classList.add("animate-fade-in-up");
+            setActiveSection(entry.target.id);
+            // Stop observing the element once it has animated in to improve performance
+            observer.unobserve(entry.target);
           }
-        })
+        });
       },
-      { threshold: 0.3, rootMargin: "0px 0px -20% 0px" },
-    )
+      // Lower threshold to trigger animation sooner on all devices
+      { threshold: 0.1, rootMargin: "0px 0px -10% 0px" }
+    );
 
     const currentRefs = sectionRefs.current
     currentRefs.forEach((section) => {
