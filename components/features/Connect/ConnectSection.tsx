@@ -1,9 +1,10 @@
+// sxurabh/miniportfolio/MiniPortfolio-8fc6179eb320b0f649cdabe6a6215686109d4f55/components/features/Connect/ConnectSection.tsx
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import { useSession, signIn, signOut } from "next-auth/react"
-import { Github } from "lucide-react"
+import { Github, Loader2 } from "lucide-react"
 import type { SocialLink } from "@/lib/types"
 
 interface ConnectSectionProps {
@@ -12,6 +13,18 @@ interface ConnectSectionProps {
 
 export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>(({ socialLinks }, ref) => {
   const { data: session } = useSession()
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleSignIn = () => {
+    setIsSigningIn(true);
+    signIn("github");
+  };
+
+  const handleSignOut = () => {
+    setIsSigningOut(true);
+    signOut();
+  };
 
   return (
     <section id="connect" ref={ref} className="py-32 opacity-0">
@@ -28,20 +41,38 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
                         Signed in as <span className="font-medium text-foreground">{session.user?.name}</span>
                     </p>
                     <button
-                        onClick={() => signOut()}
-                        className="px-3 py-1.5 text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors"
+                        onClick={handleSignOut}
+                        disabled={isSigningOut}
+                        className="flex items-center justify-center gap-1.5 px-3 py-1.5 w-[120px] text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
                     >
-                        Sign out
+                      {isSigningOut ? (
+                        <>
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          <span>Signing out...</span>
+                        </>
+                      ) : (
+                        <span>Sign out</span>
+                      )}
                     </button>
                 </div>
             ) : (
                 <div className="pt-2">
                     <button
-                        onClick={() => signIn("github")}
-                        className="group flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 text-foreground hover:text-foreground/90 text-sm"
+                        onClick={handleSignIn}
+                        disabled={isSigningIn}
+                        className="group flex items-center justify-center gap-2 px-4 py-2 w-[190px] border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 text-foreground hover:text-foreground/90 text-sm hover:-translate-y-0.5 disabled:opacity-75 disabled:cursor-not-allowed"
                     >
-                        <Github className="w-4 h-4" />
-                        <span>Sign in with GitHub</span>
+                      {isSigningIn ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Signing in...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Github className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+                          <span>Sign in with GitHub</span>
+                        </>
+                      )}
                     </button>
                 </div>
             )}

@@ -2,15 +2,19 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Thought } from "@/lib/types";
-import { ThoughtFormModal } from "./ThoughtFormModal";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteThought } from "@/actions/thought";
 import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+
+const ThoughtFormModal = dynamic(() =>
+  import("./ThoughtFormModal").then((mod) => mod.ThoughtFormModal)
+);
 
 interface ThoughtsSectionProps {
   allThoughts: Thought[];
@@ -57,11 +61,13 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
 
     const renderModals = () => (
       <>
-        <ThoughtFormModal 
-          isOpen={isFormModalOpen} 
-          onClose={closeFormModal} 
-          thought={selectedItem} 
-        />
+        {isFormModalOpen && (
+          <ThoughtFormModal 
+            isOpen={isFormModalOpen} 
+            onClose={closeFormModal} 
+            thought={selectedItem} 
+          />
+        )}
         <DeleteConfirmationModal 
           isOpen={isDeleteModalOpen} 
           onClose={closeDeleteModal} 

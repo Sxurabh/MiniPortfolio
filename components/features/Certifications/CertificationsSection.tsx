@@ -2,14 +2,18 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import { ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Certification } from "@/lib/types";
-import { CertificationFormModal } from "@/components/features/Certifications/CertificationFormModal";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteCertification } from "@/actions/certification";
 import { GenericCrudSection } from "../../sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+
+const CertificationFormModal = dynamic(() =>
+  import("@/components/features/Certifications/CertificationFormModal").then((mod) => mod.CertificationFormModal)
+);
 
 interface CertificationsSectionProps {
   allCertifications: Certification[];
@@ -65,11 +69,13 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
 
     const renderModals = () => (
       <>
-        <CertificationFormModal 
-          isOpen={isFormModalOpen} 
-          onClose={closeFormModal} 
-          certification={selectedItem} 
-        />
+        {isFormModalOpen && (
+          <CertificationFormModal 
+            isOpen={isFormModalOpen} 
+            onClose={closeFormModal} 
+            certification={selectedItem} 
+          />
+        )}
         <DeleteConfirmationModal 
           isOpen={isDeleteModalOpen} 
           onClose={closeDeleteModal} 

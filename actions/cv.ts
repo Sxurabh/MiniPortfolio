@@ -1,9 +1,12 @@
+// actions/cv.ts
 "use server";
 
+import { put, del } from '@vercel/blob';
 import { revalidatePath } from "next/cache";
-import fs from "fs/promises";
-import path from "path";
 import { checkAdminAuth } from "@/lib/auth-utils";
+import { env } from "@/lib/env.server"; // Import your validated env
+
+const CV_BLOB_PATHNAME = "cv-saurabh-kirve.pdf";
 
 export async function uploadCv(formData: FormData) {
   try {
@@ -12,33 +15,34 @@ export async function uploadCv(formData: FormData) {
     if (!file) {
       return { error: "No file provided." };
     }
-
     if (file.type !== "application/pdf") {
       return { error: "Invalid file type. Only PDFs are allowed." };
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const filePath = path.join(process.cwd(), "public", "cv-saurabh-kirve.pdf");
-    await fs.writeFile(filePath, buffer);
+    const blob = await put(CV_BLOB_PATHNAME, file, {
+      access: 'public',
+      cacheControlMaxAge: 60, 
+    });
 
     revalidatePath("/");
-    return { success: "CV uploaded successfully!" };
+    return { success: "CV uploaded successfully!", url: blob.url };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "An unknown error occurred." };
   }
 }
 
 export async function deleteCv() {
-  try {
-    await checkAdminAuth();
-    const filePath = path.join(process.cwd(), "public", "cv-saurabh-kirve.pdf");
-    await fs.unlink(filePath);
-    revalidatePath("/");
-    return { success: "CV deleted successfully!" };
-  } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-      return { error: "CV not found." };
+    try {
+        await checkAdminAuth();
+        
+        const cvUrl = `${env.BLOB_URL_PREFIX}/${CV_BLOB_PATHNAME}`;
+        
+        await del(cvUrl);
+        
+        revalidatePath("/");
+        return { success: "CV deleted successfully!" };
+    } catch (error) {
+        console.error("Delete CV Error:", error);
+        return { error: "Failed to delete CV." };
     }
-    return { error: error instanceof Error ? error.message : "An unknown error occurred." };
-  }
 }

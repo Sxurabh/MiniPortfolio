@@ -1,14 +1,19 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic"; // Import dynamic
 import { Github, ExternalLink, Edit, Trash2 } from "lucide-react";
 import type { Project } from "@/lib/types";
-import { ProjectFormModal } from "./ProjectFormModal";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteProject } from "@/actions/project";
 import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+
+// Dynamically import the form modal. It will only be loaded when needed.
+const ProjectFormModal = dynamic(() => 
+  import("./ProjectFormModal").then((mod) => mod.ProjectFormModal)
+);
 
 interface ProjectsSectionProps {
   allProjects: Project[];
@@ -61,11 +66,13 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
 
     const renderModals = () => (
       <>
-        <ProjectFormModal 
-          isOpen={isFormModalOpen} 
-          onClose={closeFormModal} 
-          project={selectedItem} 
-        />
+        {isFormModalOpen && (
+          <ProjectFormModal 
+            isOpen={isFormModalOpen} 
+            onClose={closeFormModal} 
+            project={selectedItem} 
+          />
+        )}
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen}
           onClose={closeDeleteModal}
