@@ -10,7 +10,9 @@ const envSchema = z.object({
   NEXT_PUBLIC_ADMIN_EMAIL: z
     .string()
     .email("NEXT_PUBLIC_ADMIN_EMAIL must be a valid email address"),
+  BLOB_URL_PREFIX: z.string().url("BLOB_URL_PREFIX must be a valid URL"),
+  // Add the new token schema here
+  BLOB_READ_WRITE_TOKEN: z.string().min(1, "BLOB_READ_WRITE_TOKEN is required"),
 });
 
-// The `parse` method will throw a helpful error if any variable is missing or invalid.
 export const env = envSchema.parse(process.env);
