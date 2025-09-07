@@ -1,3 +1,4 @@
+// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,15 +22,15 @@ model Project {
 }
 
 model Certification {
-  id           Int      @id @default(autoincrement())
-  year         String
-  title        String
-  issuer       String
-  description  String   @db.Text
-  credential   String
-  link         String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  year        String
+  title       String
+  issuer      String
+  description String   @db.Text
+  credential  String
+  link        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Thought {
@@ -54,26 +55,35 @@ model WorkExperience {
   updatedAt   DateTime @updatedAt
 }
 
+// ---- New Message Model ----
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  // Relation to User
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
 // ---- NextAuth.js Models ----
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  // Add this new field to match the data sent by GitHub
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
   refresh_token_expires_in Int?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -94,6 +104,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  messages      Message[] // Add this relation
 }
 
 model VerificationToken {

@@ -39,5 +39,16 @@ export interface WorkExperience {
 export interface SocialLink {
   name: string;
   handle: string;
-  url: string;
+  url:string;
+}
+
+// New type for messages that include the sender's user details
+export interface MessageWithUser {
+  id: number;
+  content: string;
+  createdAt: Date;
+  user: {
+    name: string | null;
+    email: string | null;
+  };
 }

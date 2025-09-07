@@ -6,6 +6,8 @@ const envSchema = z.object({
   DIRECT_URL: z.string().url("DIRECT_URL must be a valid URL"),
   GITHUB_ID: z.string().min(1, "GITHUB_ID is required"),
   GITHUB_SECRET: z.string().min(1, "GITHUB_SECRET is required"),
+  GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
+  GOOGLE_CLIENT_SECRET: z.string().min(1, "GOOGLE_CLIENT_SECRET is required"),
   AUTH_SECRET: z.string().min(1, "AUTH_SECRET is required"),
   NEXT_PUBLIC_ADMIN_EMAIL: z
     .string()
