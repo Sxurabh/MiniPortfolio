@@ -1,3 +1,4 @@
+// lib/schemas.ts
 import { z } from "zod";
 
 // --- Work Schemas ---
@@ -17,7 +18,7 @@ export type WorkExperienceFormValues = z.infer<typeof workExperienceSchema>;
 export type UpdateWorkExperienceFormValues = z.infer<typeof updateWorkExperienceSchema>;
 
 
-// --- Project Schemas (NEW) ---
+// --- Project Schemas ---
 export const projectSchema = z.object({
   title: z.string().min(1, "Title is required."),
   description: z.string().min(1, "Description is required."),
@@ -34,7 +35,7 @@ export const updateProjectSchema = projectSchema.extend({
 export type ProjectFormValues = z.infer<typeof projectSchema>;
 export type UpdateProjectFormValues = z.infer<typeof updateProjectSchema>;
 
-// --- Certification Schemas (NEW) ---
+// --- Certification Schemas ---
 export const certificationSchema = z.object({
   title: z.string().min(1, "Title is required."),
   issuer: z.string().min(1, "Issuer is required."),
@@ -51,7 +52,7 @@ export const updateCertificationSchema = certificationSchema.extend({
 export type CertificationFormValues = z.infer<typeof certificationSchema>;
 export type UpdateCertificationFormValues = z.infer<typeof updateCertificationSchema>;
 
-// --- Thought Schemas (NEW) ---
+// --- Thought Schemas ---
 export const thoughtSchema = z.object({
   title: z.string().min(1, "Title is required."),
   excerpt: z.string().min(1, "Excerpt is required."),
@@ -66,3 +67,10 @@ export const updateThoughtSchema = thoughtSchema.extend({
 
 export type ThoughtFormValues = z.infer<typeof thoughtSchema>;
 export type UpdateThoughtFormValues = z.infer<typeof updateThoughtSchema>;
+
+// --- Message Schema (NEW) ---
+export const messageSchema = z.object({
+  content: z.string().min(1, "Message cannot be empty.").max(50, "Message cannot exceed 50 characters."),
+});
+
+export type MessageFormValues = z.infer<typeof messageSchema>;
