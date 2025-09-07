@@ -119,7 +119,7 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
                           <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                             <AlertDialogTrigger asChild>
                               <button className="flex items-center justify-center px-3 py-1.5 w-auto text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors">
-                                Messages
+                                Inbox
                               </button>
                             </AlertDialogTrigger>
                             <AlertDialogContent className="max-w-md md:max-w-lg lg:max-w-2xl">
