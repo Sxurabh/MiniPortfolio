@@ -1,10 +1,11 @@
+// components/features/Intro/IntroSection.tsx
 "use client"
 
 import React, { useState, useTransition, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { uploadCv, deleteCv } from "@/actions/cv";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
 
 interface IntroSectionProps {
   cvExists: boolean
@@ -53,32 +54,35 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
       const formData = new FormData();
       formData.append("cv", file);
       
-      // --- FIX: Optimistic UI update for Upload ---
-      setCvExists(true); // Assume success and show the CV download button immediately
-      
       startUploadTransition(async () => {
         const result = await uploadCv(formData);
         if (result.success) {
           setUploadSuccess(true);
-          setTimeout(() => setUploadSuccess(false), 2500);
+          // After success message duration, hide message and swap buttons
+          setTimeout(() => {
+            setUploadSuccess(false);
+            setCvExists(true); 
+          }, 2000); // Show success for 2 seconds
         } else {
           console.error(result.error);
-          setCvExists(false); // If it failed, revert the UI state
         }
+        if (fileInputRef.current) fileInputRef.current.value = "";
       });
     }
   };
 
   const handleDeleteCv = () => {
-    setCvExists(false); // Immediately remove the CV download button from the UI
     startDeleteTransition(async () => {
       const result = await deleteCv();
       if (result.success) {
         setDeleteSuccess(true);
-        setTimeout(() => setDeleteSuccess(false), 2500);
+        // After success message duration, hide message and swap buttons
+        setTimeout(() => {
+          setDeleteSuccess(false);
+          setCvExists(false);
+        }, 2000); // Show success for 2 seconds
       } else {
         console.error(result.error);
-        setCvExists(true); // If the delete failed on the server, bring the button back
       }
     });
   };
@@ -149,37 +153,58 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
                   <span className="border-0 text-foreground">My Life on Paper</span>
                 </button>
               )}
+              
               {isAdmin && (
                 <>
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".pdf" />
                   
-                  <button 
-                    onClick={handleUploadClick} 
-                    disabled={isUploadPending || isDeletePending || uploadSuccess} 
-                    className={`px-3 py-1.5 text-xs rounded-md border transition-all duration-300 flex items-center gap-1.5 ${
-                      uploadSuccess 
-                        ? 'border-green-500 text-green-500' 
-                        : 'border-border hover:border-muted-foreground/50'
-                    }`}
-                  >
-                    {isUploadPending ? 'Uploading...' : 
-                      uploadSuccess ? (<> <CheckCircle className="w-3.5 h-3.5" /> Uploaded! </>) : 'Upload CV'
-                    }
-                  </button>
+                  {/* Show Upload button if CV does not exist */}
+                  {!cvExists && (
+                    <button 
+                      onClick={handleUploadClick} 
+                      disabled={isUploadPending || uploadSuccess} 
+                      className={`px-3 py-1.5 text-xs rounded-md border transition-all duration-300 flex items-center gap-1.5 w-[100px] justify-center 
+                        ${uploadSuccess ? 'border-green-500 text-green-500' : 'border-border hover:border-muted-foreground/50'}
+                      `}
+                    >
+                      {isUploadPending ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Uploading...</span>
+                        </>
+                      ) : uploadSuccess ? (
+                        <>
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          <span>Uploaded!</span>
+                        </>
+                      ) : (
+                        'Upload CV'
+                      )}
+                    </button>
+                  )}
                   
+                  {/* Show Delete button if CV exists */}
                   {cvExists && (
                     <button 
                       onClick={handleDeleteCv} 
-                      disabled={isUploadPending || isDeletePending || deleteSuccess} 
-                      className={`px-3 py-1.5 text-xs rounded-md border transition-all duration-300 flex items-center gap-1.5 ${
-                        deleteSuccess 
-                          ? 'border-green-500 text-green-500' 
-                          : 'border-destructive/50 text-destructive hover:border-destructive'
-                      }`}
+                      disabled={isDeletePending || deleteSuccess} 
+                      className={`px-3 py-1.5 text-xs rounded-md border transition-all duration-300 flex items-center gap-1.5 w-[100px] justify-center 
+                        ${deleteSuccess ? 'border-red-500 text-red-500' : 'border-destructive/50 text-destructive hover:border-destructive'}
+                      `}
                     >
-                      {isDeletePending ? 'Deleting...' : 
-                        deleteSuccess ? (<> <CheckCircle className="w-3.5 h-3.5" /> Deleted! </>) : 'Delete CV'
-                      }
+                      {isDeletePending ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Deleting...</span>
+                        </>
+                      ) : deleteSuccess ? (
+                        <>
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          <span>Deleted!</span>
+                        </>
+                      ) : (
+                        'Delete CV'
+                      )}
                     </button>
                   )}
                 </>

@@ -1,10 +1,10 @@
+// app/page.tsx
 import { PrismaClient } from '@prisma/client'
 import PortfolioClient from "@/components/PortfolioClient"
 import type { SocialLink } from '@/lib/types'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import fs from "fs/promises";
-import path from "path";
+import { head } from "@vercel/blob";
 
 const prisma = new PrismaClient()
 
@@ -14,6 +14,8 @@ const socialLinks: SocialLink[] = [
   { name: "LinkedIn", handle: "saurabhkirve", url: "https://www.linkedin.com/in/saurabhkirve/" },
   { name: "Instagram", handle: "whosaurabh", url: "https://www.instagram.com/whosaurabh/" },
 ];
+
+const CV_BLOB_PATHNAME = "cv-saurabh-kirve.pdf";
 
 export default async function Home() {
   // Fetch all data in parallel for faster server response
@@ -25,13 +27,18 @@ export default async function Home() {
     prisma.workExperience.findMany({ orderBy: { year: 'desc' } })
   ]);
 
-  const cvFilePath = path.join(process.cwd(), "public", "cv-saurabh-kirve.pdf");
   let cvExists = false;
+
   try {
-    await fs.access(cvFilePath);
+    await head(CV_BLOB_PATHNAME);
     cvExists = true;
-  } catch (error) {
-    // File doesn't exist
+  } catch (error: any) {
+    // The Vercel Blob SDK throws an error with a specific message for 404s.
+    // We will only log errors that are NOT the expected "not found" error.
+    if (!(error instanceof Error && error.message.includes("The requested blob does not exist"))) {
+      console.error("Error checking for CV blob:", error);
+    }
+    // For the expected "not found" error, we do nothing and let cvExists remain false.
   }
 
   return (
