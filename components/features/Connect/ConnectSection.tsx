@@ -1,8 +1,9 @@
+// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/features/Connect/ConnectSection.tsx
 "use client";
 
 import React, { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -62,7 +63,35 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
 
   const handleSignIn = (provider: "github" | "google") => {
     setIsSigningIn(provider);
-    signIn(provider);
+
+    // Point the popup to our new intermediary sign-in page
+    const url = `/auth/signin-popup?provider=${provider}`;
+
+    const width = 600, height = 700;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+    
+    const popup = window.open(
+      url, 
+      "auth", 
+      `width=${width},height=${height},top=${top},left=${left}`
+    );
+
+    // BUG FIX: Check if the user closes the popup manually
+    if (popup) {
+      const timer = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(timer);
+          // If the user closes the popup, reset the button's loading state
+          // to prevent the loader from spinning infinitely.
+          setIsSigningIn(null);
+        }
+      }, 500); // Check every half-second
+    } else {
+      // Handle cases where a popup blocker is active
+      toast.error("Popup blocked. Please allow popups for this site to sign in.");
+      setIsSigningIn(null);
+    }
   };
 
   const handleSignOut = () => {
