@@ -1,4 +1,4 @@
-// components/features/Intro/IntroSection.tsx
+// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/features/Intro/IntroSection.tsx
 "use client"
 
 import React, { useState, useTransition, useEffect, useRef } from "react"
@@ -8,10 +8,11 @@ import { uploadCv, deleteCv } from "@/actions/cv";
 import { CheckCircle, Loader2 } from "lucide-react";
 
 interface IntroSectionProps {
-  cvExists: boolean
+  cvExists: boolean;
+  cvUrl: string; // <-- ADD THIS LINE
 }
 
-export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ cvExists: initialCvExists }, ref) => {
+export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ cvExists: initialCvExists, cvUrl }, ref) => {
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -36,8 +37,9 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
   };
 
   const handleDownloadCV = () => {
+    if (!cvUrl) return; // <-- ADD THIS CHECK
     const link = document.createElement("a")
-    link.href = "/cv-saurabh-kirve.pdf"
+    link.href = cvUrl; // <-- USE THE BLOB URL
     link.download = "Saurabh-Kirve-CV.pdf"
     document.body.appendChild(link)
     link.click()
@@ -58,11 +60,10 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
         const result = await uploadCv(formData);
         if (result.success) {
           setUploadSuccess(true);
-          // After success message duration, hide message and swap buttons
           setTimeout(() => {
             setUploadSuccess(false);
             setCvExists(true); 
-          }, 2000); // Show success for 2 seconds
+          }, 2000);
         } else {
           console.error(result.error);
         }
@@ -76,11 +77,10 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
       const result = await deleteCv();
       if (result.success) {
         setDeleteSuccess(true);
-        // After success message duration, hide message and swap buttons
         setTimeout(() => {
           setDeleteSuccess(false);
           setCvExists(false);
-        }, 2000); // Show success for 2 seconds
+        }, 2000);
       } else {
         console.error(result.error);
       }
@@ -158,7 +158,6 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
                 <>
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".pdf" />
                   
-                  {/* Show Upload button if CV does not exist */}
                   {!cvExists && (
                     <button 
                       onClick={handleUploadClick} 
@@ -183,7 +182,6 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
                     </button>
                   )}
                   
-                  {/* Show Delete button if CV exists */}
                   {cvExists && (
                     <button 
                       onClick={handleDeleteCv} 

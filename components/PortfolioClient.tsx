@@ -1,3 +1,4 @@
+// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/PortfolioClient.tsx
 "use client"
 
 import React, { useRef, useEffect, useState } from "react"
@@ -24,6 +25,7 @@ interface PortfolioClientProps {
     workExperience: WorkExperience[];
     socialLinks: SocialLink[];
     cvExists: boolean;
+    cvUrl: string; // <-- ADD THIS LINE
 }
 
 export default function PortfolioClient({
@@ -33,7 +35,8 @@ export default function PortfolioClient({
     allThoughts,
     workExperience,
     socialLinks,
-    cvExists
+    cvExists,
+    cvUrl // <-- ADD THIS LINE
 }: PortfolioClientProps) {
   const [activeSection, setActiveSection] = useState("intro")
   const sectionRefs = useRef<(HTMLElement | null)[]>([])
@@ -71,7 +74,7 @@ export default function PortfolioClient({
       <Nav activeSection={activeSection} />
 
       <main className="max-w-4xl mx-auto px-8 lg:px-16">
-        <IntroSection ref={(el) => {sectionRefs.current[0] = el}} cvExists={cvExists} />
+        <IntroSection ref={(el) => {sectionRefs.current[0] = el}} cvExists={cvExists} cvUrl={cvUrl} />
         <WorkSection ref={(el) => {sectionRefs.current[1] = el}} workExperience={workExperience} />
         <ProjectsSection ref={(el) => {sectionRefs.current[2] = el}} allProjects={allProjects} />
         <CertificationsSection ref={(el) => {sectionRefs.current[3] = el}} allCertifications={allCertifications} />

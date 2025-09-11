@@ -1,4 +1,4 @@
-// app/page.tsx
+// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/app/page.tsx
 import { PrismaClient } from '@prisma/client'
 import PortfolioClient from "@/components/PortfolioClient"
 import type { SocialLink } from '@/lib/types'
@@ -28,17 +28,16 @@ export default async function Home() {
   ]);
 
   let cvExists = false;
+  let cvUrl = "";
 
   try {
-    await head(CV_BLOB_PATHNAME);
+    const blob = await head(CV_BLOB_PATHNAME);
     cvExists = true;
+    cvUrl = blob.url; // <-- ADD THIS LINE to get the public URL
   } catch (error: any) {
-    // The Vercel Blob SDK throws an error with a specific message for 404s.
-    // We will only log errors that are NOT the expected "not found" error.
     if (!(error instanceof Error && error.message.includes("The requested blob does not exist"))) {
       console.error("Error checking for CV blob:", error);
     }
-    // For the expected "not found" error, we do nothing and let cvExists remain false.
   }
 
   return (
@@ -50,6 +49,7 @@ export default async function Home() {
         workExperience={workExperience}
         socialLinks={socialLinks}
         cvExists={cvExists}
+        cvUrl={cvUrl} // <-- PASS THE URL AS A PROP
     />
   )
 }
