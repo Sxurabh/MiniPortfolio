@@ -1,16 +1,19 @@
-// @/components/sections/GenericCrudSection.tsx
+// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/sections/GenericCrudSection.tsx
 "use client";
 
-import React, { useState, ReactNode } from "react";
+import React, { useState, useTransition, ReactNode } from "react";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+import { Loader2 } from "lucide-react";
 
 interface GenericCrudSectionProps<T extends { id: any }> {
   id: string;
   title: string;
   items: T[];
+  totalItems: number;
   renderItem: (item: T) => ReactNode;
   renderModals: () => ReactNode;
   onAddItem: () => void;
+  onPageChange: (page: number) => Promise<T[]>;
   itemsPerPage: number;
   gridClass?: string;
 }
@@ -18,15 +21,22 @@ interface GenericCrudSectionProps<T extends { id: any }> {
 export const GenericCrudSection = React.forwardRef<
   HTMLElement,
   GenericCrudSectionProps<any>
->(({ id, title, items, renderItem, renderModals, onAddItem, itemsPerPage, gridClass = "space-y-12" }, ref) => {
+>(({ id, title, items, totalItems, renderItem, renderModals, onAddItem, onPageChange, itemsPerPage, gridClass = "space-y-12" }, ref) => {
   const isAdmin = useIsAdmin();
   const [currentPage, setCurrentPage] = useState(1);
+  const [displayedItems, setDisplayedItems] = useState<any[]>(items);
+  const [isPending, startTransition] = useTransition();
 
-  const totalPages = Math.ceil(items.length / itemsPerPage);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const getPaginatedItems = () => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return items.slice(startIndex, startIndex + itemsPerPage);
+  const handlePageChange = (newPage: number) => {
+    if (newPage === currentPage || isPending || newPage < 1 || newPage > totalPages) return;
+
+    startTransition(async () => {
+      setCurrentPage(newPage);
+      const newItems = await onPageChange(newPage);
+      setDisplayedItems(newItems);
+    });
   };
 
   return (
@@ -43,30 +53,42 @@ export const GenericCrudSection = React.forwardRef<
                 </button>
               )}
             </div>
-            {items.length > 0 && (
-                <div className="text-sm text-muted-foreground font-mono">
+            {totalItems > 0 && (
+              <div className="text-sm text-muted-foreground font-mono">
                 {(currentPage - 1) * itemsPerPage + 1}-
-                {Math.min(currentPage * itemsPerPage, items.length)} of {items.length}
+                {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
               </div>
             )}
           </div>
 
-          <div className={gridClass}>
-            {items.length > 0 ? (
-                getPaginatedItems().map((item) => renderItem(item))
-            ) : (
-                <div className="text-center text-muted-foreground py-16">
-                    <p>There are no items to display yet.</p>
-                    {isAdmin && <p className="text-sm mt-2">Click "Add New" to get started.</p>}
-                </div>
+          {/* --- FIX STARTS HERE --- */}
+          <div className="relative min-h-[200px]">
+            {isPending && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg">
+                <Loader2 className="w-8 h-8 animate-spin text-foreground" />
+              </div>
             )}
+            {/* The layout class (`gridClass`) and transition classes are now on the SAME div that maps the items.
+              This restores the direct-child relationship required by CSS Grid and Flexbox's `space-y-*` utilities.
+            */}
+            <div className={`${gridClass} ${isPending ? 'opacity-50' : 'opacity-100'} transition-opacity duration-300`}>
+              {displayedItems.length > 0 ? (
+                displayedItems.map((item) => renderItem(item))
+              ) : (
+                <div className="text-center text-muted-foreground py-16 col-span-full">
+                  <p>There are no items to display yet.</p>
+                  {isAdmin && <p className="text-sm mt-2">Click "Add New" to get started.</p>}
+                </div>
+              )}
+            </div>
           </div>
+          {/* --- FIX ENDS HERE --- */}
 
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-4 pt-8">
               <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1 || isPending}
                 className="p-2 rounded-lg border border-border hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Previous page"
               >
@@ -76,16 +98,17 @@ export const GenericCrudSection = React.forwardRef<
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-8 h-8 rounded-lg border transition-all duration-300 text-sm ${page === currentPage ? "border-foreground bg-foreground text-background" : "border-border hover:border-muted-foreground/50"}`}
+                    onClick={() => handlePageChange(page)}
+                    disabled={isPending}
+                    className={`w-8 h-8 rounded-lg border transition-all duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${page === currentPage ? "border-foreground bg-foreground text-background" : "border-border hover:border-muted-foreground/50"}`}
                   >
                     {page}
                   </button>
                 ))}
               </div>
               <button
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || isPending}
                 className="p-2 rounded-lg border border-border hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Next page"
               >

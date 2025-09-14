@@ -27,24 +27,33 @@ const socialLinks: SocialLink[] = [
 const CV_BLOB_PATHNAME = "cv-saurabh-kirve.pdf";
 
 export default async function Home() {
-  const [session, allProjects, allCertifications, allThoughts, workExperience] = await Promise.all([
+  const [session, allProjects, projectsCount, allCertifications, certificationsCount, allThoughts, thoughtsCount, workExperience, workExperienceCount] = await Promise.all([
     getServerSession(authOptions),
     prisma.project.findMany({ 
-      orderBy: { year: 'desc' },
-      select: { id: true, title: true, description: true, tech: true, github: true, live: true, year: true }
+      orderBy: [{ year: 'desc' }, { createdAt: 'desc' }],
+      // --- CHANGE: Add createdAt to the select query ---
+      select: { id: true, title: true, description: true, tech: true, github: true, live: true, year: true, createdAt: true },
+      take: 4
     }),
+    prisma.project.count(),
     prisma.certification.findMany({ 
-      orderBy: { year: 'desc' },
-      select: { id: true, year: true, title: true, issuer: true, description: true, credential: true, link: true }
+      orderBy: [{ year: 'desc' }, { createdAt: 'desc' }],
+      select: { id: true, year: true, title: true, issuer: true, description: true, credential: true, link: true, createdAt: true },
+      take: 3
     }),
+    prisma.certification.count(),
     prisma.thought.findMany({ 
       orderBy: { createdAt: 'desc' },
-      select: { id: true, title: true, excerpt: true, date: true, readTime: true, url: true }
+      select: { id: true, title: true, excerpt: true, date: true, readTime: true, url: true },
+      take: 4
     }),
+    prisma.thought.count(),
     prisma.workExperience.findMany({ 
-      orderBy: { year: 'desc' },
-      select: { id: true, year: true, role: true, company: true, description: true, tech: true }
-    })
+      orderBy: [{ year: 'desc' }, { createdAt: 'desc' }],
+      select: { id: true, year: true, role: true, company: true, description: true, tech: true },
+      take: 3
+    }),
+    prisma.workExperience.count(),
   ]);
 
   let cvExists = false;
@@ -63,10 +72,10 @@ export default async function Home() {
   return (
     <PortfolioClient>
       <IntroSection cvExists={cvExists} cvUrl={cvUrl} />
-      <WorkSection workExperience={workExperience} />
-      <ProjectsSection allProjects={allProjects} />
-      <CertificationsSection allCertifications={allCertifications} />
-      <ThoughtsSection allThoughts={allThoughts} />
+      <WorkSection workExperience={workExperience} totalItems={workExperienceCount} />
+      <ProjectsSection allProjects={allProjects} totalItems={projectsCount} />
+      <CertificationsSection allCertifications={allCertifications} totalItems={certificationsCount} />
+      <ThoughtsSection allThoughts={allThoughts} totalItems={thoughtsCount} />
       <ConnectSection socialLinks={socialLinks} />
     </PortfolioClient>
   )
