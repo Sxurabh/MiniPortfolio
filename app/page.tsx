@@ -12,6 +12,9 @@ import { CertificationsSection } from "@/components/features/Certifications/Cert
 import { ThoughtsSection } from "@/components/features/Thoughts/ThoughtsSection"
 import { ConnectSection } from "@/components/features/Connect/ConnectSection"
 
+// Revalidate the page every hour.
+export const revalidate = 3600;
+
 const prisma = new PrismaClient()
 
 const socialLinks: SocialLink[] = [
@@ -26,10 +29,22 @@ const CV_BLOB_PATHNAME = "cv-saurabh-kirve.pdf";
 export default async function Home() {
   const [session, allProjects, allCertifications, allThoughts, workExperience] = await Promise.all([
     getServerSession(authOptions),
-    prisma.project.findMany({ orderBy: { year: 'desc' } }),
-    prisma.certification.findMany({ orderBy: { year: 'desc' } }),
-    prisma.thought.findMany({ orderBy: { createdAt: 'desc' } }),
-    prisma.workExperience.findMany({ orderBy: { year: 'desc' } })
+    prisma.project.findMany({ 
+      orderBy: { year: 'desc' },
+      select: { id: true, title: true, description: true, tech: true, github: true, live: true, year: true }
+    }),
+    prisma.certification.findMany({ 
+      orderBy: { year: 'desc' },
+      select: { id: true, year: true, title: true, issuer: true, description: true, credential: true, link: true }
+    }),
+    prisma.thought.findMany({ 
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, title: true, excerpt: true, date: true, readTime: true, url: true }
+    }),
+    prisma.workExperience.findMany({ 
+      orderBy: { year: 'desc' },
+      select: { id: true, year: true, role: true, company: true, description: true, tech: true }
+    })
   ]);
 
   let cvExists = false;
