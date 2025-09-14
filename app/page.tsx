@@ -30,27 +30,25 @@ export default async function Home() {
   const [session, allProjects, projectsCount, allCertifications, certificationsCount, allThoughts, thoughtsCount, workExperience, workExperienceCount] = await Promise.all([
     getServerSession(authOptions),
     prisma.project.findMany({ 
-      // --- FIX: Add secondary sort by createdAt ---
       orderBy: [{ year: 'desc' }, { createdAt: 'desc' }],
-      select: { id: true, title: true, description: true, tech: true, github: true, live: true, year: true },
+      // --- CHANGE: Add createdAt to the select query ---
+      select: { id: true, title: true, description: true, tech: true, github: true, live: true, year: true, createdAt: true },
       take: 4
     }),
     prisma.project.count(),
     prisma.certification.findMany({ 
-      // --- FIX: Add secondary sort by createdAt ---
       orderBy: [{ year: 'desc' }, { createdAt: 'desc' }],
-      select: { id: true, year: true, title: true, issuer: true, description: true, credential: true, link: true },
+      select: { id: true, year: true, title: true, issuer: true, description: true, credential: true, link: true, createdAt: true },
       take: 3
     }),
     prisma.certification.count(),
     prisma.thought.findMany({ 
-      orderBy: { createdAt: 'desc' }, // This was already correct
+      orderBy: { createdAt: 'desc' },
       select: { id: true, title: true, excerpt: true, date: true, readTime: true, url: true },
       take: 4
     }),
     prisma.thought.count(),
     prisma.workExperience.findMany({ 
-      // --- FIX: Add secondary sort by createdAt ---
       orderBy: [{ year: 'desc' }, { createdAt: 'desc' }],
       select: { id: true, year: true, role: true, company: true, description: true, tech: true },
       take: 3

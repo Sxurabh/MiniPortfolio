@@ -1,3 +1,4 @@
+// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/lib/types.ts
 export interface Project {
   id: number;
   title: string;
@@ -6,6 +7,7 @@ export interface Project {
   github: string;
   live: string;
   year: string;
+  createdAt: Date; // <-- ADD THIS LINE
 }
 
 export interface Certification {
@@ -16,10 +18,11 @@ export interface Certification {
   description: string;
   credential: string;
   link: string;
+  createdAt: Date;
 }
 
 export interface Thought {
-  id: number; // Add the ID field here
+  id: number;
   title: string;
   excerpt: string;
   date: string;
@@ -42,7 +45,6 @@ export interface SocialLink {
   url:string;
 }
 
-// New type for messages that include the sender's user details
 export interface MessageWithUser {
   id: number;
   content: string;
