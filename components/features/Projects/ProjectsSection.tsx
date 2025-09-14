@@ -1,16 +1,17 @@
+// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/features/Projects/ProjectsSection.tsx
 "use client";
 
 import React from "react";
 import dynamic from "next/dynamic";
-import { Github, ExternalLink, Edit, Trash2, Loader2 } from "lucide-react"; // Import Loader2
+import { Github, ExternalLink, Edit, Trash2, Loader2 } from "lucide-react";
 import type { Project } from "@/lib/types";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteProject } from "@/actions/project";
+import { fetchPaginatedProjects } from "@/actions/fetchPaginatedData"; // <-- IMPORT
 import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
-// ADDED: A loading fallback for the dynamic import
 const ProjectFormModal = dynamic(() => 
   import("./ProjectFormModal").then((mod) => mod.ProjectFormModal),
   {
@@ -24,10 +25,11 @@ const ProjectFormModal = dynamic(() =>
 
 interface ProjectsSectionProps {
   allProjects: Project[];
+  totalItems: number;
 }
 
 export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProps>(
-  ({ allProjects }, ref) => {
+  ({ allProjects, totalItems }, ref) => {
     const isAdmin = useIsAdmin();
     const {
       isFormModalOpen,
@@ -39,6 +41,8 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
       closeFormModal,
       closeDeleteModal,
     } = useCrudState<Project>();
+    
+    const itemsPerPage = 4; // Define items per page
 
     const renderItem = (project: Project) => (
       <article key={project.id} className="group relative flex flex-col h-full p-8 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-500 hover:shadow-lg">
@@ -98,10 +102,12 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
         ref={ref}
         title="Featured Projects"
         items={allProjects}
+        totalItems={totalItems}
         renderItem={renderItem}
         renderModals={renderModals}
         onAddItem={handleAddItem}
-        itemsPerPage={4}
+        itemsPerPage={itemsPerPage}
+        onPageChange={(page) => fetchPaginatedProjects(page, itemsPerPage)} // <-- PASS THE ACTION
         gridClass="grid lg:grid-cols-2 gap-8"
       />
     );

@@ -3,15 +3,15 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
-import { ExternalLink, Edit, Trash2, Loader2 } from "lucide-react"; // Import Loader2
+import { ExternalLink, Edit, Trash2, Loader2 } from "lucide-react";
 import type { Certification } from "@/lib/types";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteCertification } from "@/actions/certification";
+import { fetchPaginatedCertifications } from "@/actions/fetchPaginatedData"; // <-- IMPORT
 import { GenericCrudSection } from "../../sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
-// ADDED: A loading fallback for the dynamic import
 const CertificationFormModal = dynamic(() =>
   import("@/components/features/Certifications/CertificationFormModal").then((mod) => mod.CertificationFormModal),
   {
@@ -25,10 +25,11 @@ const CertificationFormModal = dynamic(() =>
 
 interface CertificationsSectionProps {
   allCertifications: Certification[];
+  totalItems: number;
 }
 
 export const CertificationsSection = React.forwardRef<HTMLElement, CertificationsSectionProps>(
-  ({ allCertifications }, ref) => {
+  ({ allCertifications, totalItems }, ref) => {
     const isAdmin = useIsAdmin();
     const {
       isFormModalOpen,
@@ -40,6 +41,8 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
       closeFormModal,
       closeDeleteModal,
     } = useCrudState<Certification>();
+
+    const itemsPerPage = 3; // Define items per page
 
     const renderItem = (cert: Certification) => (
       <div key={cert.id} className="group grid lg:grid-cols-12 gap-8 py-8 border-b border-border/50 hover:border-border transition-colors duration-500 relative">
@@ -102,10 +105,12 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
         ref={ref}
         title="Certifications"
         items={allCertifications}
+        totalItems={totalItems}
         renderItem={renderItem}
         renderModals={renderModals}
         onAddItem={handleAddItem}
-        itemsPerPage={3}
+        itemsPerPage={itemsPerPage}
+        onPageChange={(page) => fetchPaginatedCertifications(page, itemsPerPage)} // <-- PASS THE ACTION
       />
     );
   }
