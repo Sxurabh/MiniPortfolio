@@ -1,18 +1,14 @@
 // sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/features/Connect/ConnectSection.tsx
 "use client";
 
-import React, { useState, useTransition, useEffect } from "react";
+import React, { useState, useTransition, useEffect, Suspense } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useSession, signOut } from "next-auth/react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Github, Loader2, Send } from "lucide-react";
 import { format } from "date-fns";
 
 import { useIsAdmin } from "@/hooks/use-is-admin";
-import { messageSchema, type MessageFormValues } from "@/lib/schemas";
-import { sendMessage } from "@/actions/message";
 import { fetchAdminMessages } from "@/actions/fetch-admin-messages";
 import type { SocialLink, MessageWithUser } from "@/lib/types";
 
@@ -30,6 +26,13 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
+// Dynamically import icons and the new MessageForm
+const Loader2 = dynamic(() => import("lucide-react").then((mod) => mod.Loader2));
+const Github = dynamic(() => import("lucide-react").then((mod) => mod.Github));
+const MessageForm = dynamic(() => import("./MessageForm").then((mod) => mod.MessageForm), {
+  // Add a simple skeleton loader for the form
+  loading: () => <div className="w-full h-[58px] mt-4 bg-muted/50 rounded-lg animate-pulse" />,
+});
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 48 48" aria-hidden="true">
@@ -49,46 +52,26 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
   const isAdmin = useIsAdmin();
   const [isSigningIn, setIsSigningIn] = useState<string | null>(null);
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const [isPending, startTransition] = useTransition();
-
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messages, setMessages] = useState<MessageWithUser[]>([]);
   const [isFetchingMessages, setIsFetchingMessages] = useState(false);
 
-
-  const form = useForm<MessageFormValues>({
-    resolver: zodResolver(messageSchema),
-    defaultValues: { content: "" },
-  });
-
   const handleSignIn = (provider: "github" | "google") => {
     setIsSigningIn(provider);
-
-    // Point the popup to our new intermediary sign-in page
     const url = `/auth/signin-popup?provider=${provider}`;
-
     const width = 600, height = 700;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
-    
-    const popup = window.open(
-      url, 
-      "auth", 
-      `width=${width},height=${height},top=${top},left=${left}`
-    );
-
-    // BUG FIX: Check if the user closes the popup manually
+    const popup = window.open(url, "auth", `width=${width},height=${height},top=${top},left=${left}`);
     if (popup) {
       const timer = setInterval(() => {
         if (popup.closed) {
           clearInterval(timer);
-          // If the user closes the popup, reset the button's loading state
-          // to prevent the loader from spinning infinitely.
           setIsSigningIn(null);
         }
-      }, 500); // Check every half-second
+      }, 500);
     } else {
-      // Handle cases where a popup blocker is active
       toast.error("Popup blocked. Please allow popups for this site to sign in.");
       setIsSigningIn(null);
     }
@@ -98,21 +81,6 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
     setIsSigningOut(true);
     signOut();
   };
-
-  const onMessageSubmit = (values: MessageFormValues) => {
-    startTransition(async () => {
-      const result = await sendMessage(values);
-      if (result.error) {
-        toast.error(result.error);
-      }
-      if (result.success) {
-        toast.success(result.success);
-        form.reset();
-      }
-    });
-  };
-  
-  const watchedContent = form.watch("content", "");
 
   useEffect(() => {
     if (isModalOpen && isAdmin) {
@@ -126,7 +94,6 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
         .finally(() => setIsFetchingMessages(false));
     }
   }, [isModalOpen, isAdmin]);
-
 
   return (
     <section id="connect" ref={ref} className="py-32 opacity-0">
@@ -154,36 +121,23 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
                             <AlertDialogContent className="max-w-md md:max-w-lg lg:max-w-2xl">
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Visitor Messages</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Read messages sent by your website visitors.
-                                </AlertDialogDescription>
+                                <AlertDialogDescription>Read messages sent by your website visitors.</AlertDialogDescription>
                               </AlertDialogHeader>
                               <div className="max-h-[70vh] py-2">
                                 <ScrollArea className="h-full max-h-[60vh] p-4 -mx-4">
                                   {isFetchingMessages ? (
-                                    <div className="flex items-center justify-center py-8 text-muted-foreground">
-                                      <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                                      Loading messages...
-                                    </div>
+                                    <div className="flex items-center justify-center py-8 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mr-2" />Loading messages...</div>
                                   ) : messages.length === 0 ? (
-                                    <div className="text-center py-8 text-muted-foreground">
-                                      <p>No messages yet.</p>
-                                    </div>
+                                    <div className="text-center py-8 text-muted-foreground"><p>No messages yet.</p></div>
                                   ) : (
-                                    <div className="space-y-2"> {/* Reduced gap from space-y-4 to space-y-2 */}
+                                    <div className="space-y-2">
                                       {messages.map((message, index) => (
                                         <React.Fragment key={message.id}>
                                           <div className="flex flex-col p-3 border border-border rounded-md bg-card shadow-sm">
-                                            <p className="text-sm text-foreground line-clamp-1"> {/* Message content */}
-                                              <span className="font-medium pr-1">&quot;{message.content}&quot;</span>
-                                            </p>
+                                            <p className="text-sm text-foreground line-clamp-1"><span className="font-medium pr-1">&quot;{message.content}&quot;</span></p>
                                             <div className="flex items-center text-xs text-muted-foreground mt-1 justify-between">
-                                                <span className="flex-grow pr-2 truncate">
-                                                    From: <span className="font-semibold">{message.user.name}</span> (<span className="text-muted-foreground/80">{message.user.email}</span>)
-                                                </span>
-                                                <span className="font-mono text-muted-foreground/80 flex-shrink-0">
-                                                    {format(new Date(message.createdAt), "dd MMM yyyy, h:mm a")}
-                                                </span>
+                                              <span className="flex-grow pr-2 truncate">From: <span className="font-semibold">{message.user.name}</span> (<span className="text-muted-foreground/80">{message.user.email}</span>)</span>
+                                              <span className="font-mono text-muted-foreground/80 flex-shrink-0">{format(new Date(message.createdAt), "dd MMM yyyy, h:mm a")}</span>
                                             </div>
                                           </div>
                                           {index < messages.length - 1 && <Separator className="my-2" />}
@@ -193,84 +147,29 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
                                   )}
                                 </ScrollArea>
                               </div>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Close</AlertDialogCancel>
-                              </AlertDialogFooter>
+                              <AlertDialogFooter><AlertDialogCancel>Close</AlertDialogCancel></AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
                         )}
-                        <button
-                            onClick={handleSignOut}
-                            disabled={isSigningOut}
-                            className="flex items-center justify-center gap-1.5 px-3 py-1.5 w-auto text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
-                        >
-                          {isSigningOut ? (
-                            <>
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                              <span>Signing out...</span>
-                            </>
-                          ) : (
-                            <span>Sign out</span>
-                          )}
+                        <button onClick={handleSignOut} disabled={isSigningOut} className="flex items-center justify-center gap-1.5 px-3 py-1.5 w-auto text-xs rounded-md border border-border hover:border-muted-foreground/50 transition-colors disabled:opacity-75 disabled:cursor-not-allowed">
+                          {isSigningOut ? (<><Loader2 className="w-3 h-3 animate-spin" /><span>Signing out...</span></>) : (<span>Sign out</span>)}
                         </button>
                       </div>
                   </div>
 
-                  {!isAdmin && (
-                    <form onSubmit={form.handleSubmit(onMessageSubmit)} className="w-full mt-4">
-                        <div className="flex items-start gap-2">
-                            <div className="relative flex-grow">
-                                <input
-                                    {...form.register("content")}
-                                    placeholder="Send a message..."
-                                    maxLength={50}
-                                    className="w-full input-style pr-12"
-                                />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                                    {watchedContent.length}/50
-                                </span>
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={isPending}
-                                aria-label="Send message"
-                                className="p-2 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed h-[40px] aspect-square flex items-center justify-center shrink-0"
-                            >
-                                {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5 text-muted-foreground" />}
-                            </button>
-                        </div>
-                        {form.formState.errors.content && <p className="form-error">{form.formState.errors.content.message}</p>}
-                    </form>
-                  )}
+                  {!isAdmin && <MessageForm />}
+
               </div>
             ) : (
               <div className="pt-2">
                   <div className="flex items-center gap-4">
                       <span className="text-sm text-muted-foreground">Sign in with</span>
                       <div className="flex items-center gap-2">
-                          <button
-                              onClick={() => handleSignIn("github")}
-                              disabled={!!isSigningIn}
-                              aria-label="Sign in with GitHub"
-                              className="group p-2 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed"
-                          >
-                              {isSigningIn === 'github' ? (
-                                  <Loader2 className="w-5 h-5 animate-spin" />
-                              ) : (
-                                  <Github className="w-5 h-5 text-muted-foreground transition-colors group-hover:text-foreground" />
-                              )}
+                          <button onClick={() => handleSignIn("github")} disabled={!!isSigningIn} aria-label="Sign in with GitHub" className="group p-2 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed">
+                              {isSigningIn === 'github' ? (<Loader2 className="w-5 h-5 animate-spin" />) : (<Github className="w-5 h-5 text-muted-foreground transition-colors group-hover:text-foreground" />)}
                           </button>
-                          <button
-                              onClick={() => handleSignIn("google")}
-                              disabled={!!isSigningIn}
-                              aria-label="Sign in with Google"
-                              className="group p-2 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed"
-                          >
-                              {isSigningIn === 'google' ? (
-                                  <Loader2 className="w-5 h-5 animate-spin" />
-                              ) : (
-                                  <GoogleIcon />
-                              )}
+                          <button onClick={() => handleSignIn("google")} disabled={!!isSigningIn} aria-label="Sign in with Google" className="group p-2 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed">
+                              {isSigningIn === 'google' ? (<Loader2 className="w-5 h-5 animate-spin" />) : (<GoogleIcon />)}
                           </button>
                       </div>
                   </div>
@@ -283,17 +182,9 @@ export const ConnectSection = React.forwardRef<HTMLElement, ConnectSectionProps>
           <div className="text-sm text-muted-foreground font-mono">ELSEWHERE</div>
           <div className="grid grid-cols-2 gap-4">
             {socialLinks.map((social) => (
-              <Link
-                key={social.name}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group p-4 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 hover:shadow-sm"
-              >
+              <Link key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="group p-4 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-300 hover:shadow-sm">
                 <div className="space-y-2">
-                  <div className="text-foreground group-hover:text-muted-foreground transition-colors duration-300">
-                    {social.name}
-                  </div>
+                  <div className="text-foreground group-hover:text-muted-foreground transition-colors duration-300">{social.name}</div>
                   <div className="text-sm text-muted-foreground">{social.handle}</div>
                 </div>
               </Link>

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "prisma generate && next build",
+    "analyze": "cross-env ANALYZE=true pnpm build",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
@@ -41,10 +42,12 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^14.2.5",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
     "postcss": "^8.5",
     "prisma": "^5.17.0",
     "tailwindcss": "^4.1.9",
