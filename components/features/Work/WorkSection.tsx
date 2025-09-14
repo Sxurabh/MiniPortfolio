@@ -5,13 +5,21 @@ import dynamic from "next/dynamic";
 import type { WorkExperience } from "@/lib/types";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteWorkExperience } from "@/actions/work";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Loader2 } from "lucide-react"; // Import Loader2
 import { GenericCrudSection } from "../../sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
+// ADDED: A loading fallback for the dynamic import
 const WorkFormModal = dynamic(() => 
-  import("./WorkFormModal").then((mod) => mod.WorkFormModal)
+  import("./WorkFormModal").then((mod) => mod.WorkFormModal),
+  {
+    loading: () => (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    ),
+  }
 );
 
 interface WorkSectionProps {

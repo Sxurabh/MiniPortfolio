@@ -4,7 +4,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { ExternalLink, Edit, Trash2 } from "lucide-react";
+import { ExternalLink, Edit, Trash2, Loader2 } from "lucide-react"; // Import Loader2
 import type { Thought } from "@/lib/types";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteThought } from "@/actions/thought";
@@ -12,8 +12,16 @@ import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
+// ADDED: A loading fallback for the dynamic import
 const ThoughtFormModal = dynamic(() =>
-  import("./ThoughtFormModal").then((mod) => mod.ThoughtFormModal)
+  import("./ThoughtFormModal").then((mod) => mod.ThoughtFormModal),
+  {
+    loading: () => (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    ),
+  }
 );
 
 interface ThoughtsSectionProps {

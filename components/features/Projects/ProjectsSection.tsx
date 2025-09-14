@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import dynamic from "next/dynamic"; // Import dynamic
-import { Github, ExternalLink, Edit, Trash2 } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Github, ExternalLink, Edit, Trash2, Loader2 } from "lucide-react"; // Import Loader2
 import type { Project } from "@/lib/types";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteProject } from "@/actions/project";
@@ -10,9 +10,16 @@ import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
-// Dynamically import the form modal. It will only be loaded when needed.
+// ADDED: A loading fallback for the dynamic import
 const ProjectFormModal = dynamic(() => 
-  import("./ProjectFormModal").then((mod) => mod.ProjectFormModal)
+  import("./ProjectFormModal").then((mod) => mod.ProjectFormModal),
+  {
+    loading: () => (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    ),
+  }
 );
 
 interface ProjectsSectionProps {
