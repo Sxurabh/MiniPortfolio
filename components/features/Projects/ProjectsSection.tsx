@@ -1,4 +1,4 @@
-// sxurabh/miniportfolio/MiniPortfolio-Experimental-Branch/components/features/Projects/ProjectsSection.tsx
+// sxurabh/miniportfolio/MiniPortfolio-aaa9e92389a1f99ac8e2f101069fb5f2a8e946a9/components/features/Projects/ProjectsSection.tsx
 "use client";
 
 import React from "react";
@@ -24,12 +24,12 @@ const ProjectFormModal = dynamic(() =>
 );
 
 interface ProjectsSectionProps {
-  allProjects: Project[];
+  initialProjects: Project[];
   totalItems: number;
 }
 
 export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProps>(
-  ({ allProjects, totalItems }, ref) => {
+  ({ initialProjects, totalItems }, ref) => {
     const isAdmin = useIsAdmin();
     const {
       isFormModalOpen,
@@ -45,7 +45,6 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
     const itemsPerPage = 4;
 
     const renderItem = (project: Project) => {
-      // --- NEW: Logic to check if the project is recent ---
       const now = new Date();
       const currentYear = now.getFullYear().toString();
       const isCurrentYear = project.year.trim() === currentYear;
@@ -69,7 +68,6 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <h3 className="text-xl font-medium">{project.title}</h3>
-                {/* --- NEW: Conditionally render the "New" tag --- */}
                 {isNew && (
                   <span className="text-xs font-medium px-2.5 py-0.5 rounded-full border border-teal-400/50 text-teal-600 dark:border-teal-500/50 dark:text-teal-400">
                     New
@@ -122,13 +120,13 @@ export const ProjectsSection = React.forwardRef<HTMLElement, ProjectsSectionProp
         id="projects"
         ref={ref}
         title="Featured Projects"
-        items={allProjects}
+        initialItems={initialProjects}
         totalItems={totalItems}
         renderItem={renderItem}
         renderModals={renderModals}
         onAddItem={handleAddItem}
         itemsPerPage={itemsPerPage}
-        onPageChange={(page) => fetchPaginatedProjects(page, itemsPerPage)}
+        fetchPaginatedData={fetchPaginatedProjects}
         gridClass="grid lg:grid-cols-2 gap-8"
       />
     );

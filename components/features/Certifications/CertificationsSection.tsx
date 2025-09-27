@@ -1,4 +1,4 @@
-// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/features/Certifications/CertificationsSection.tsx
+// sxurabh/miniportfolio/MiniPortfolio-aaa9e92389a1f99ac8e2f101069fb5f2a8e946a9/components/features/Certifications/CertificationsSection.tsx
 "use client";
 
 import React from "react";
@@ -24,12 +24,12 @@ const CertificationFormModal = dynamic(() =>
 );
 
 interface CertificationsSectionProps {
-  allCertifications: Certification[];
+  initialCertifications: Certification[];
   totalItems: number;
 }
 
 export const CertificationsSection = React.forwardRef<HTMLElement, CertificationsSectionProps>(
-  ({ allCertifications, totalItems }, ref) => {
+  ({ initialCertifications, totalItems }, ref) => {
     const isAdmin = useIsAdmin();
     const {
       isFormModalOpen,
@@ -45,19 +45,15 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
     const itemsPerPage = 3;
 
     const renderItem = (cert: Certification) => {
-      // --- IMPROVED LOGIC ---
       const now = new Date();
       const currentYear = now.getFullYear().toString();
       
-      // 1. Check if the certification was earned this year.
       const isCurrentYear = cert.year.trim() === currentYear;
 
-      // 2. Check if it was added to the database in the last 30 days.
       const certDate = new Date(cert.createdAt);
       const oneMonthInMs = 30 * 24 * 60 * 60 * 1000;
       const isRecentlyAdded = (now.getTime() - certDate.getTime()) < oneMonthInMs;
 
-      // The "New" tag will only show if BOTH conditions are true.
       const isNew = isCurrentYear && isRecentlyAdded;
 
       return (
@@ -128,13 +124,13 @@ export const CertificationsSection = React.forwardRef<HTMLElement, Certification
         id="certifications"
         ref={ref}
         title="Certifications"
-        items={allCertifications}
+        initialItems={initialCertifications}
         totalItems={totalItems}
         renderItem={renderItem}
         renderModals={renderModals}
         onAddItem={handleAddItem}
         itemsPerPage={itemsPerPage}
-        onPageChange={(page) => fetchPaginatedCertifications(page, itemsPerPage)}
+        fetchPaginatedData={fetchPaginatedCertifications}
       />
     );
   }

@@ -1,4 +1,4 @@
-// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/features/Thoughts/ThoughtsSection.tsx
+// sxurabh/miniportfolio/MiniPortfolio-aaa9e92389a1f99ac8e2f101069fb5f2a8e946a9/components/features/Thoughts/ThoughtsSection.tsx
 "use client";
 
 import React from "react";
@@ -8,7 +8,7 @@ import { ExternalLink, Edit, Trash2, Loader2 } from "lucide-react";
 import type { Thought } from "@/lib/types";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteThought } from "@/actions/thought";
-import { fetchPaginatedThoughts } from "@/actions/fetchPaginatedData"; // <-- IMPORT
+import { fetchPaginatedThoughts } from "@/actions/fetchPaginatedData";
 import { GenericCrudSection } from "@/components/sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
 import { useIsAdmin } from "@/hooks/use-is-admin";
@@ -25,12 +25,12 @@ const ThoughtFormModal = dynamic(() =>
 );
 
 interface ThoughtsSectionProps {
-  allThoughts: Thought[];
+  initialThoughts: Thought[];
   totalItems: number;
 }
 
 export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProps>(
-  ({ allThoughts, totalItems }, ref) => {
+  ({ initialThoughts, totalItems }, ref) => {
     const isAdmin = useIsAdmin();
     const {
       isFormModalOpen,
@@ -43,7 +43,7 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
       closeDeleteModal,
     } = useCrudState<Thought>();
 
-    const itemsPerPage = 4; // Define items per page
+    const itemsPerPage = 4;
 
     const renderItem = (post: Thought) => (
       <article key={post.id} className="group p-8 border border-border rounded-lg hover:border-muted-foreground/50 transition-all duration-500 hover:shadow-lg flex flex-col justify-between">
@@ -96,13 +96,13 @@ export const ThoughtsSection = React.forwardRef<HTMLElement, ThoughtsSectionProp
         id="thoughts"
         ref={ref}
         title="Recent Thoughts"
-        items={allThoughts}
+        initialItems={initialThoughts}
         totalItems={totalItems}
         renderItem={renderItem}
         renderModals={renderModals}
         onAddItem={handleAddItem}
         itemsPerPage={itemsPerPage}
-        onPageChange={(page) => fetchPaginatedThoughts(page, itemsPerPage)} // <-- PASS THE ACTION
+        fetchPaginatedData={fetchPaginatedThoughts}
         gridClass="grid lg:grid-cols-2 gap-8"
       />
     );

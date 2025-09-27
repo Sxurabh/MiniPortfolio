@@ -1,4 +1,4 @@
-// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/features/Work/WorkSection.tsx
+// sxurabh/miniportfolio/MiniPortfolio-aaa9e92389a1f99ac8e2f101069fb5f2a8e946a9/components/features/Work/WorkSection.tsx
 "use client";
 
 import React from "react";
@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import type { WorkExperience } from "@/lib/types";
 import { DeleteConfirmationModal } from "@/components/common/DeleteConfirmationModal";
 import { deleteWorkExperience } from "@/actions/work";
-import { fetchPaginatedWorkExperiences } from "@/actions/fetchPaginatedData"; // <-- IMPORT
+import { fetchPaginatedWorkExperiences } from "@/actions/fetchPaginatedData";
 import { Edit, Trash2, Loader2 } from "lucide-react";
 import { GenericCrudSection } from "../../sections/GenericCrudSection";
 import { useCrudState } from "@/hooks/use-crud-state";
@@ -24,12 +24,12 @@ const WorkFormModal = dynamic(() =>
 );
 
 interface WorkSectionProps {
-  workExperience: WorkExperience[];
+  initialWorkExperience: WorkExperience[];
   totalItems: number;
 }
 
 export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
-  ({ workExperience, totalItems }, ref) => {
+  ({ initialWorkExperience, totalItems }, ref) => {
     const isAdmin = useIsAdmin();
     const {
       isFormModalOpen,
@@ -42,7 +42,7 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
       closeDeleteModal,
     } = useCrudState<WorkExperience>();
     
-    const itemsPerPage = 3; // Define items per page
+    const itemsPerPage = 3;
 
     const renderItem = (job: WorkExperience) => (
         <div key={job.id} className="group grid lg:grid-cols-12 gap-8 py-8 border-b border-border/50 hover:border-border transition-colors duration-500 relative">
@@ -98,13 +98,13 @@ export const WorkSection = React.forwardRef<HTMLElement, WorkSectionProps>(
         id="work"
         ref={ref}
         title="Selected Work"
-        items={workExperience}
+        initialItems={initialWorkExperience}
         totalItems={totalItems}
         renderItem={renderItem}
         renderModals={renderModals}
         onAddItem={handleAddItem}
         itemsPerPage={itemsPerPage}
-        onPageChange={(page) => fetchPaginatedWorkExperiences(page, itemsPerPage)} // <-- PASS THE ACTION
+        fetchPaginatedData={fetchPaginatedWorkExperiences}
       />
     );
   }

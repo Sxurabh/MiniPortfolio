@@ -1,21 +1,19 @@
-// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/app/page.tsx
-import { PrismaClient } from '@prisma/client'
-import PortfolioClient from "@/components/PortfolioClient"
-import type { SocialLink } from '@/lib/types'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+// sxurabh/miniportfolio/MiniPortfolio-aaa9e92389a1f99ac8e2f101069fb5f2a8e946a9/app/page.tsx
+import prisma from "@/lib/prisma";
+import PortfolioClient from "@/components/PortfolioClient";
+import type { SocialLink } from '@/lib/types';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import { head } from "@vercel/blob";
-import { IntroSection } from "@/components/features/Intro/IntroSection"
-import { WorkSection } from "@/components/features/Work/WorkSection"
-import { ProjectsSection } from "@/components/features/Projects/ProjectsSection"
-import { CertificationsSection } from "@/components/features/Certifications/CertificationsSection"
-import { ThoughtsSection } from "@/components/features/Thoughts/ThoughtsSection"
-import { ConnectSection } from "@/components/features/Connect/ConnectSection"
+import { IntroSection } from "@/components/features/Intro/IntroSection";
+import { WorkSection } from "@/components/features/Work/WorkSection";
+import { ProjectsSection } from "@/components/features/Projects/ProjectsSection";
+import { CertificationsSection } from "@/components/features/Certifications/CertificationsSection";
+import { ThoughtsSection } from "@/components/features/Thoughts/ThoughtsSection";
+import { ConnectSection } from "@/components/features/Connect/ConnectSection";
 
 // Revalidate the page every hour.
 export const revalidate = 3600;
-
-const prisma = new PrismaClient()
 
 const socialLinks: SocialLink[] = [
   { name: "GitHub", handle: "@Sxurabh", url: "https://github.com/Sxurabh" },
@@ -31,7 +29,6 @@ export default async function Home() {
     getServerSession(authOptions),
     prisma.project.findMany({ 
       orderBy: [{ year: 'desc' }, { createdAt: 'desc' }],
-      // --- CHANGE: Add createdAt to the select query ---
       select: { id: true, title: true, description: true, tech: true, github: true, live: true, year: true, createdAt: true },
       take: 4
     }),
@@ -72,10 +69,14 @@ export default async function Home() {
   return (
     <PortfolioClient>
       <IntroSection cvExists={cvExists} cvUrl={cvUrl} />
-      <WorkSection workExperience={workExperience} totalItems={workExperienceCount} />
-      <ProjectsSection allProjects={allProjects} totalItems={projectsCount} />
-      <CertificationsSection allCertifications={allCertifications} totalItems={certificationsCount} />
-      <ThoughtsSection allThoughts={allThoughts} totalItems={thoughtsCount} />
+      {/* FIX: Use `initialWorkExperience` prop */}
+      <WorkSection initialWorkExperience={workExperience} totalItems={workExperienceCount} />
+      {/* FIX: Use `initialProjects` prop */}
+      <ProjectsSection initialProjects={allProjects} totalItems={projectsCount} />
+      {/* FIX: Use `initialCertifications` prop */}
+      <CertificationsSection initialCertifications={allCertifications} totalItems={certificationsCount} />
+      {/* FIX: Use `initialThoughts` prop */}
+      <ThoughtsSection initialThoughts={allThoughts} totalItems={thoughtsCount} />
       <ConnectSection socialLinks={socialLinks} />
     </PortfolioClient>
   )
