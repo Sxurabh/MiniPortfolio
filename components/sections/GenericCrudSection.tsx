@@ -1,4 +1,4 @@
-// sxurabh/miniportfolio/MiniPortfolio-ExperimentalBranch/components/sections/GenericCrudSection.tsx
+// sxurabh/miniportfolio/MiniPortfolio-aaa9e92389a1f99ac8e2f101069fb5f2a8e946a9/components/sections/GenericCrudSection.tsx
 "use client";
 
 import React, { useState, useTransition, ReactNode } from "react";
@@ -8,12 +8,12 @@ import { Loader2 } from "lucide-react";
 interface GenericCrudSectionProps<T extends { id: any }> {
   id: string;
   title: string;
-  items: T[];
+  initialItems: T[];
   totalItems: number;
   renderItem: (item: T) => ReactNode;
   renderModals: () => ReactNode;
   onAddItem: () => void;
-  onPageChange: (page: number) => Promise<T[]>;
+  fetchPaginatedData: (page: number, limit: number) => Promise<T[]>;
   itemsPerPage: number;
   gridClass?: string;
 }
@@ -21,10 +21,10 @@ interface GenericCrudSectionProps<T extends { id: any }> {
 export const GenericCrudSection = React.forwardRef<
   HTMLElement,
   GenericCrudSectionProps<any>
->(({ id, title, items, totalItems, renderItem, renderModals, onAddItem, onPageChange, itemsPerPage, gridClass = "space-y-12" }, ref) => {
+>(({ id, title, initialItems, totalItems, renderItem, renderModals, onAddItem, fetchPaginatedData, itemsPerPage, gridClass = "" }, ref) => {
   const isAdmin = useIsAdmin();
   const [currentPage, setCurrentPage] = useState(1);
-  const [displayedItems, setDisplayedItems] = useState<any[]>(items);
+  const [displayedItems, setDisplayedItems] = useState<any[]>(initialItems);
   const [isPending, startTransition] = useTransition();
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -33,9 +33,9 @@ export const GenericCrudSection = React.forwardRef<
     if (newPage === currentPage || isPending || newPage < 1 || newPage > totalPages) return;
 
     startTransition(async () => {
-      setCurrentPage(newPage);
-      const newItems = await onPageChange(newPage);
+      const newItems = await fetchPaginatedData(newPage, itemsPerPage);
       setDisplayedItems(newItems);
+      setCurrentPage(newPage);
     });
   };
 
@@ -61,16 +61,12 @@ export const GenericCrudSection = React.forwardRef<
             )}
           </div>
 
-          {/* --- FIX STARTS HERE --- */}
           <div className="relative min-h-[200px]">
             {isPending && (
               <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg">
                 <Loader2 className="w-8 h-8 animate-spin text-foreground" />
               </div>
             )}
-            {/* The layout class (`gridClass`) and transition classes are now on the SAME div that maps the items.
-              This restores the direct-child relationship required by CSS Grid and Flexbox's `space-y-*` utilities.
-            */}
             <div className={`${gridClass} ${isPending ? 'opacity-50' : 'opacity-100'} transition-opacity duration-300`}>
               {displayedItems.length > 0 ? (
                 displayedItems.map((item) => renderItem(item))
@@ -82,7 +78,6 @@ export const GenericCrudSection = React.forwardRef<
               )}
             </div>
           </div>
-          {/* --- FIX ENDS HERE --- */}
 
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-4 pt-8">
