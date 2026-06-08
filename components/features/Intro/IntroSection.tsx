@@ -219,7 +219,7 @@ export const IntroSection = React.forwardRef<HTMLElement, IntroSectionProps>(({ 
           <div className="space-y-4">
             <div className="text-sm text-muted-foreground font-mono">CURRENTLY</div>
             <div className="space-y-2">
-              <div className="text-foreground">Associate Analyst</div>
+              <div className="text-foreground">Analyst</div>
               <div className="text-muted-foreground">@ SG Analytics</div>
               <div className="text-xs text-muted-foreground">2023 — Present</div>
             </div>
